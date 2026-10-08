@@ -11,9 +11,9 @@ const ACK = { ResultCode: 0, ResultDesc: 'Accepted' };
 Deno.serve(async (req) => {
   if (req.method !== 'POST') return json({ error: 'method_not_allowed' }, 405);
 
-  const secret = Deno.env.get('MPESA_CALLBACK_SECRET') ?? '';
+  const secrets = [Deno.env.get('MPESA_CALLBACK_SECRET'), Deno.env.get('MPESA_CALLBACK_SECRET_PREVIOUS')].filter((v): v is string => !!v);
   const provided = new URL(req.url).searchParams.get('s') ?? '';
-  if (!secret || !timingSafeEqual(provided, secret)) return json({ error: 'forbidden' }, 403);
+  if (!secrets.some((x) => timingSafeEqual(provided, x))) return json({ error: 'forbidden' }, 403);
 
   let body: unknown;
   try { body = await req.json(); } catch { return json(ACK); }

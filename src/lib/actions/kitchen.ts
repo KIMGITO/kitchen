@@ -29,7 +29,7 @@ export async function inviteStaff(_: ActionResult | null, fd: FormData): Promise
   const tenant = await getTenant();
   const { data: token, error } = await (await createClient()).rpc('invite_staff', { p_tenant: tenant.id, p_email: parsed.data.email, p_role: parsed.data.role });
   if (error || !token) return fail(friendlyError(error?.message));
-  const h = await headers(); const host = h.get('host') ?? tenant.primary_hostname ?? '';
+  const h = await headers(); const host = tenant.primary_hostname ?? h.get('host') ?? '';
   const proto = h.get('x-forwarded-proto') ?? (host.startsWith('localhost') || host.includes('.localhost') ? 'http' : 'https');
   revalidatePath('/dashboard/staff');
   const link = `${proto}://${host}/invite/${token}`;

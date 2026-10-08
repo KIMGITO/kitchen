@@ -8,8 +8,8 @@ const ACK = { ResultCode: 0, ResultDesc: 'Accepted' };
 Deno.serve(async (req) => {
   if (req.method !== 'POST') return json({ error: 'method_not_allowed' }, 405);
   const url = new URL(req.url);
-  const secret = Deno.env.get('MPESA_CALLBACK_SECRET') ?? '';
-  if (!secret || !timingSafeEqual(url.searchParams.get('s') ?? '', secret)) return json({ error: 'forbidden' }, 403);
+  const secrets = [Deno.env.get('MPESA_CALLBACK_SECRET'), Deno.env.get('MPESA_CALLBACK_SECRET_PREVIOUS')].filter((v): v is string => !!v);
+  if (!secrets.some((x) => timingSafeEqual(url.searchParams.get('s') ?? '', x))) return json({ error: 'forbidden' }, 403);
   const kind = url.searchParams.get('kind');
   if (kind !== 'b2c' && kind !== 'reversal') return json(ACK);
 
