@@ -33,6 +33,18 @@ describe('host classification', () => {
     expect(classifyHost('Kitchen-A.example.com:3000', 'example.com')).toEqual({ kind: 'tenant', hostname: 'kitchen-a.example.com' });
     expect(classifyHost('orders.kitchen-a.com', 'example.com')).toEqual({ kind: 'tenant', hostname: 'orders.kitchen-a.com' });
   });
+  it('routes loopback and bare LAN IPs to the platform site', () => {
+    expect(classifyHost('localhost:3000', 'localhost')).toEqual({ kind: 'platform' });
+    expect(classifyHost('127.0.0.1:3000', 'localhost')).toEqual({ kind: 'platform' });
+    expect(classifyHost('192.168.100.211:3000', 'localhost')).toEqual({ kind: 'platform' });
+    expect(classifyHost('192.168.100.211', 'example.com')).toEqual({ kind: 'platform' });
+  });
+  it('routes nip.io / sslip.io LAN hosts without /etc/hosts edits', () => {
+    expect(classifyHost('192.168.100.211.nip.io:3000', 'localhost')).toEqual({ kind: 'platform' });
+    expect(classifyHost('admin.192.168.100.211.nip.io:3000', 'localhost')).toEqual({ kind: 'admin' });
+    expect(classifyHost('myshop.192.168.100.211.nip.io:3000', 'localhost')).toEqual({ kind: 'tenant', hostname: 'myshop.localhost' });
+    expect(classifyHost('myshop.192-168-100-211.sslip.io:3000', 'localhost')).toEqual({ kind: 'tenant', hostname: 'myshop.localhost' });
+  });
 });
 
 describe('brand palette accessibility', () => {

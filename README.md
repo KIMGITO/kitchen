@@ -55,6 +55,18 @@ Local hosts (browsers resolve `*.localhost` automatically):
 | `my-kitchen.localhost:3000` | A kitchen's storefront |
 | `my-kitchen.localhost:3000/staff-login` → `/dashboard` | That kitchen's back office |
 
+Access from another device on the same Wi-Fi (phone/tablet):
+
+1. Start dev bound to your LAN: `npm run dev -- -H 0.0.0.0` (then `http://<your-lan-ip>:3000`,
+   e.g. `http://192.168.100.211:3000` serves the platform site the same as `localhost:3000`).
+2. For a kitchen storefront or the admin console on the phone, use wildcard DNS — no
+   `/etc/hosts` edits needed: `http://<slug>.<lan-ip>.nip.io:3000` or
+   `http://admin.<lan-ip>.nip.io:3000` (e.g. `http://myshop.192.168.100.211.nip.io:3000`).
+   Both devices must be on the same network, and the dev machine's firewall must allow
+   inbound TCP on port 3000. A bare `http://<lan-ip>:3000` always shows the platform site
+   (it has no tenant mapping); Supabase Auth redirects/callbacks may still point at
+   `localhost`, so OAuth/magic-link flows are best completed on the dev machine itself.
+
 Production needs a wildcard DNS record and wildcard TLS for `*.yourdomain.com`, and `NEXT_PUBLIC_ROOT_DOMAIN=yourdomain.com`.
 Also update the database copy: `update platform_settings set value = '"yourdomain.com"' where key = 'root_domain';`
 
