@@ -1,0 +1,21 @@
+# Keep these blocks when you run `supabase init --force`.
+[functions.mpesa-callback]
+verify_jwt = false      # Safaricom cannot send a Supabase JWT; protected by the shared secret in the URL
+
+[functions.mpesa-result]
+verify_jwt = false      # same: B2C and Reversal results
+
+[functions.payment-reconcile]
+verify_jwt = false      # protected by the service-role bearer check inside the function
+
+[functions.notification-dispatch]
+verify_jwt = false      # protected by the service-role bearer check inside the function
+
+[functions.mpesa-stk-push]
+verify_jwt = true
+
+[functions.mpesa-b2c-payout]
+verify_jwt = true       # also verifies the caller is a platform owner/admin
+
+[functions.mpesa-refund]
+verify_jwt = true

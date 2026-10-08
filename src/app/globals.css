@@ -1,0 +1,141 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    @apply bg-surface-alt font-body text-ink-muted antialiased;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display tracking-tight;
+  }
+  a:focus-visible,
+  :focus-visible {
+    outline: 2px solid rgb(var(--color-brand));
+    outline-offset: 2px;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+/* ---------- Shared UI primitives ---------- */
+@layer components {
+  /* Page shell: warm white surface, generous vertical rhythm. */
+  .page-shell {
+    @apply min-h-screen bg-surface-alt font-body text-ink-muted antialiased;
+  }
+
+  /* Card elevation system. */
+  .card {
+    @apply rounded-lg border border-line/70 bg-surface shadow-card;
+  }
+  .card-raised {
+    @apply card shadow-raised;
+  }
+
+  /* Section: warm white, soft shadow, compact to generous spacing. */
+  .section {
+    @apply py-10 sm:py-14 lg:py-16;
+  }
+  .section--alt {
+    @apply bg-surface;
+  }
+  .section--tint {
+    @apply bg-tint text-ink-muted;
+  }
+  .section--brand {
+    @apply bg-brand text-brand-contrast;
+  }
+
+  /* Form field wrapper with accessible error state. */
+  .field {
+    @apply flex flex-col gap-1.5;
+  }
+  .field--error .field-label { color: rgb(var(--color-danger)); }
+  .field--error .field-input { border-color: rgb(var(--color-danger)); box-shadow: 0 0 0 1px rgb(var(--color-danger)); }
+  .field-label {
+    @apply text-label font-semibold text-ink-muted;
+  }
+  .field-hint {
+    @apply text-caption text-ink-muted/70;
+  }
+  .field-error {
+    @apply text-caption font-semibold text-danger leading-tight;
+  }
+
+  /* Choice chips: radio-style selection. */
+  .choice-chip {
+    @apply inline-flex h-11 cursor-pointer items-center justify-between gap-3 rounded-md border border-line/60 px-4 transition-all duration-150 hover:border-brand/50 hover:bg-brand/5 hover:text-ink-muted has-[:checked]:border-brand has-[:checked]:bg-brand/5 has-[:checked]:font-semibold;
+  }
+
+  /* Value pills for status/muted chips. */
+  .pill {
+    @apply inline-flex items-center rounded-full px-3 py-1 text-caption font-semibold;
+  }
+  .pill--ghost { @apply border border-line/60 text-ink-muted; }
+  .pill--ghost:hover { @apply bg-ink/5; }
+  .pill--surface { @apply bg-surface text-ink-muted; }
+
+  /* Table/grid row hover and dividers. */
+  .table-row { @apply border-b border-line/60 last:border-0; }
+  .table-row:hover { @apply bg-surface; }
+  .table-head {
+    @apply text-label font-semibold text-ink-muted/70 uppercase tracking-wide;
+  }
+  .table-cell { @apply p-3 text-body text-ink-muted; }
+  .table-cell--right { @apply text-right; }
+  .table-caption { @apply sr-only; }
+
+  /* Skeleton / shimmer loading state (subtle, modern). */
+  .skeleton {
+    @apply animate-pulse rounded-md bg-line/60;
+  }
+  .skeleton-short { @apply h-3 w-3/4; }
+  .skeleton-medium { @apply h-4 w-1/2; }
+  .skeleton-card { @apply h-40 w-full rounded-md bg-line/50; }
+  .skeleton-text { @apply h-3 w-full rounded animate-pulse bg-line/60; }
+
+  /* Linear gradient shimmer for full-width loading bars. */
+  .shimmer-bar {
+    @apply h-2 rounded-full bg-gradient-to-r from-line/30 via-line/10 to-line/30;
+    background-size: 200% 100%;
+    animation: shimmer 1.6s linear infinite;
+  }
+}
+
+/* ---------- Motion utilities ---------- */
+@layer utilities {
+  .animate-fade-in { animation: fadeIn 0.45s ease-out both; }
+  .animate-fade-in-fast { animation: fadeIn 0.25s ease-out both; }
+  .animate-slide-up { animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) both; }
+  .animate-shimmer {
+    @apply bg-gradient-to-r from-line/30 via-line/10 to-line/30;
+    background-size: 200% 100%;
+    animation: shimmer 1.6s linear infinite;
+  }
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }
+}
