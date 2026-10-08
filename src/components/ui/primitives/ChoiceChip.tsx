@@ -18,9 +18,9 @@ export const ChoiceChip = forwardRef<HTMLInputElement, ChoiceChipProps>(function
       <input ref={ref} id={inputId} className="sr-only" {...rest} />
       <span className="flex items-center gap-3">
         <span className="text-body font-semibold text-ink-muted">{label}</span>
-        {description ? <span className="text-caption text-ink-muted/60">{description}</span> : null}
+        {description ? <span className="text-caption text-ink-soft">{description}</span> : null}
       </span>
-      {description ? <span className="text-caption text-ink-muted/40">{description}</span> : null}
+      {description ? <span className="text-caption text-ink-soft">{description}</span> : null}
     </label>
   );
 });

@@ -17,7 +17,7 @@ export function OrderTimeline({ status }: { status: OrderStatus }) {
               </span>
               {i < CUSTOMER_TIMELINE.length - 1 ? <span className={cn('h-7 w-0.5', i < idx ? 'bg-brand' : 'bg-line')} /> : null}
             </div>
-            <span className={cn('text-body', i === idx ? 'font-semibold text-ink-muted' : done ? 'text-ink-muted' : 'text-ink-muted/60')}>{STATUS_LABEL[s]}</span>
+            <span className={cn('text-body', i === idx ? 'font-semibold text-ink-muted' : done ? 'text-ink-muted' : 'text-ink-soft')}>{STATUS_LABEL[s]}</span>
           </li>
         );
       })}

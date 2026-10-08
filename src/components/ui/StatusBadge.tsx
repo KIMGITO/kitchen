@@ -2,12 +2,12 @@ import { STATUS_LABEL, type OrderStatus } from '@/lib/commerce/order-state';
 import { cn } from './cn';
 
 const tone: Record<OrderStatus, string> = {
-  PENDING_PAYMENT: 'bg-accent/20 text-accent-contrast',
+  PENDING_PAYMENT: 'bg-brand-soft text-brand',
   PAYMENT_FAILED: 'bg-danger/15 text-danger',
   PAID: 'bg-success/15 text-success',
   RECEIVED: 'bg-brand/15 text-brand-contrast',
   ACCEPTED: 'bg-brand/15 text-brand-contrast',
-  PREPARING: 'bg-accent/25 text-accent-contrast',
+  PREPARING: 'bg-brand-soft text-brand',
   READY: 'bg-success/20 text-success',
   COMPLETED: 'bg-ink-muted/10 text-ink-muted',
   CANCELLED: 'bg-ink-muted/10 text-ink-muted',

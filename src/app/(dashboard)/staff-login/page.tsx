@@ -8,7 +8,7 @@ export default function StaffLogin() {
     <Section className="flex flex-col items-center">
       <div className="mx-auto max-w-sm w-full">
         <h1 className="text-h1 text-ink-muted">Staff login</h1>
-        <p className="mt-2 text-body-lg text-ink-muted/70">Sign in to your kitchen back office.</p>
+        <p className="mt-2 text-body-lg text-ink-soft">Sign in to your kitchen back office.</p>
         <div className="mt-6"><StaffLoginForm /></div>
       </div>
     </Section>

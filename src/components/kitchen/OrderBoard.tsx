@@ -58,7 +58,7 @@ export function OrderBoard({ orders, permissions, currency }: { orders: BoardOrd
                       {i.order_item_options.length ? <span className="text-caption text-ink-soft"> ({i.order_item_options.map((x) => x.option_name).join(', ')})</span> : null}
                       {i.notes ? <span className="block text-caption text-ink-soft">Note: {i.notes}</span> : null}</li>))}
                   </ul>
-                  {o.customer_notes ? <p className="rounded-md bg-accent/20 p-2 text-caption">Customer note: {o.customer_notes}</p> : null}
+                  {o.customer_notes ? <p className="rounded-md bg-tint-alt border border-line p-2 text-caption">Customer note: {o.customer_notes}</p> : null}
                   <footer className="flex flex-wrap gap-2">
                     {staffActions(o.status, can as never).map((to) => (
                       <Button key={to} size="sm" variant={ACTION_LABEL[to]?.variant ?? 'outline'} loading={busyId === o.id} onClick={() => move(o, to)}>{ACTION_LABEL[to]?.label ?? to}</Button>))}

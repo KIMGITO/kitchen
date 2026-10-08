@@ -5,11 +5,11 @@ import { Icon } from './primitives/Icon';
 export function EmptyState({ title, description, action }: { title: string; description?: string; action?: ReactNode }) {
   return (
     <div className="mx-auto flex max-w-md flex-col items-center gap-3 rounded-lg border border-line/60 bg-surface px-6 py-12 text-center">
-      <div className="flex size-10 items-center justify-center rounded-full bg-line/30 text-ink-muted/60">
+      <div className="flex size-10 items-center justify-center rounded-full bg-line/30 text-ink-soft">
         <Icon name="help-circle" size={18} />
       </div>
       <h3 className="text-h3 text-ink-muted">{title}</h3>
-      {description ? <p className="text-body text-ink-muted/70">{description}</p> : null}
+      {description ? <p className="text-body text-ink-soft">{description}</p> : null}
       {action ? <div className="mt-3">{action}</div> : null}
     </div>
   );

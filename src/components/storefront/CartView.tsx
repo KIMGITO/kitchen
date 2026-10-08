@@ -28,15 +28,15 @@ export function CartView({ tenantId, currency, minOrderMinor }: { tenantId: stri
             </div>
             <div className="flex flex-1 flex-col gap-1">
               <p className="text-h3 text-ink-muted">{l.name}</p>
-              {l.optionNames.length ? <p className="text-caption text-ink-muted/60">{l.optionNames.join(', ')}</p> : null}
-              {l.notes ? <p className="text-caption text-ink-muted/60">Note: {l.notes}</p> : null}
+              {l.optionNames.length ? <p className="text-caption text-ink-soft">{l.optionNames.join(', ')}</p> : null}
+              {l.notes ? <p className="text-caption text-ink-soft">Note: {l.notes}</p> : null}
               <div className="mt-auto flex items-center justify-between gap-3">
                 <div className="flex items-center rounded-pill border border-line/60 bg-surface" role="group" aria-label={`Quantity for ${l.name}`}>
                   <button type="button" className="flex size-9 items-center justify-center rounded-pill text-h3 text-ink-muted hover:bg-ink/5 transition-colors" aria-label="Decrease quantity" onClick={() => setQuantity(tenantId, l.lineId, l.quantity - 1)}>−</button>
                   <span className="w-7 text-center text-label font-semibold text-ink-muted">{l.quantity}</span>
                   <button type="button" className="flex size-9 items-center justify-center rounded-pill text-h3 text-ink-muted hover:bg-ink/5 transition-colors" aria-label="Increase quantity" onClick={() => setQuantity(tenantId, l.lineId, Math.min(99, l.quantity + 1))}>+</button>
                 </div>
-                <button type="button" className="text-caption text-ink-muted/60 underline hover:text-ink-muted" onClick={() => remove(tenantId, l.lineId)}>Remove</button>
+                <button type="button" className="text-caption text-ink-soft underline hover:text-ink-muted" onClick={() => remove(tenantId, l.lineId)}>Remove</button>
               </div>
             </div>
             <p className="text-price text-ink-muted">{formatMoney(l.unitPriceMinor * l.quantity, currency)}</p>
@@ -45,7 +45,7 @@ export function CartView({ tenantId, currency, minOrderMinor }: { tenantId: stri
       </ul>
       <aside className="h-fit rounded-lg border border-line bg-surface p-5 shadow-card" aria-label="Order summary">
         <div className="flex justify-between text-body"><span className="text-ink-muted">Subtotal</span><span className="text-price">{formatMoney(subtotal, currency)}</span></div>
-        <p className="mt-1 text-caption text-ink-muted/60">Delivery fee and the final total are confirmed at checkout.</p>
+        <p className="mt-1 text-caption text-ink-soft">Delivery fee and the final total are confirmed at checkout.</p>
         {belowMin ? <p role="status" className="mt-3 text-caption font-semibold text-danger">Minimum order is {formatMoney(minOrderMinor, currency)}.</p> : null}
         <Link href="/checkout" aria-disabled={belowMin} className={`mt-4 inline-flex h-12 w-full items-center justify-center rounded-pill bg-accent px-6 text-body-lg font-semibold text-accent-contrast transition-colors ${belowMin ? "pointer-events-none opacity-55" : "hover:bg-accent/90"}`}>Checkout</Link>
       </aside>

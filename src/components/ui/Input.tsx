@@ -25,7 +25,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
         <input
           ref={ref} id={inputId} aria-invalid={error ? true : undefined} aria-describedby={describedBy}
           className={cn(
-            'field-input h-11 w-full rounded-md border bg-surface px-3.5 text-body text-ink-muted placeholder:text-ink-muted/50',
+            'field-input h-11 w-full rounded-md border bg-surface px-3.5 text-body text-ink-muted placeholder:text-ink-soft',
             'focus:border-brand focus:bg-surface focus:shadow-xs transition-colors outline-none',
             error ? 'border-danger' : 'border-line',
             className,
@@ -42,7 +42,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
     <input
       ref={ref} id={inputId} aria-invalid={error ? true : undefined} aria-describedby={describedBy}
       className={cn(
-        'h-11 rounded-md border bg-surface px-3.5 text-body text-ink-muted placeholder:text-ink-muted/50',
+        'h-11 rounded-md border bg-surface px-3.5 text-body text-ink-muted placeholder:text-ink-soft',
         'focus:border-brand focus:bg-surface focus:shadow-xs transition-colors outline-none',
         error ? 'border-danger' : 'border-line',
         className,

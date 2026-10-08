@@ -21,11 +21,11 @@ export default async function Transactions() {
 
       <section aria-labelledby="payouts-h">
         <h2 id="payouts-h" className="mb-3 text-h2 text-ink-muted">Payouts</h2>
-        {rows.length === 0 ? <p className="text-body text-ink-muted/70">No payouts yet.</p> : (
+        {rows.length === 0 ? <p className="text-body text-ink-soft">No payouts yet.</p> : (
           <div className="overflow-x-auto rounded-lg border border-line bg-surface shadow-card">
             <table className="w-full text-left text-body">
               <caption className="sr-only">Payouts</caption>
-              <thead className="border-b border-line text-label text-ink-muted/70">
+              <thead className="border-b border-line text-label text-ink-soft">
                 <tr>
                   <th scope="col" className="p-3">Amount</th>
                   <th scope="col" className="p-3">Status</th>
@@ -39,7 +39,7 @@ export default async function Transactions() {
                     <td className="table-cell table-cell--right">{formatMoney(p.amount_minor, tenant.currency)}</td>
                     <td className="table-cell"><Badge tone="surface" className="capitalize">{p.status.replace(/_/g, ' ')}</Badge></td>
                     <td className="table-cell">{p.method.replace(/_/g, ' ')}</td>
-                    <td className="table-cell text-ink-muted/70">{new Date(p.created_at).toLocaleDateString('en-KE', { dateStyle: 'medium' })}</td>
+                    <td className="table-cell text-ink-soft">{new Date(p.created_at).toLocaleDateString('en-KE', { dateStyle: 'medium' })}</td>
                   </tr>
                 ))}
               </tbody>

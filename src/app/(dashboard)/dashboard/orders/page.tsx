@@ -30,11 +30,11 @@ export default async function OrdersPage() {
 
       <section aria-labelledby="recent-h">
         <h2 id="recent-h" className="mb-3 text-h2 text-ink-muted">Recently finished</h2>
-        {(recent ?? []).length === 0 ? <p className="text-body text-ink-muted/70">No finished orders yet.</p> : (
+        {(recent ?? []).length === 0 ? <p className="text-body text-ink-soft">No finished orders yet.</p> : (
           <div className="overflow-x-auto rounded-lg border border-line bg-surface shadow-card">
             <table className="w-full text-left text-body">
               <caption className="sr-only">Recently finished orders</caption>
-              <thead className="border-b border-line text-label text-ink-muted/70">
+              <thead className="border-b border-line text-label text-ink-soft">
                 <tr>
                   <th scope="col" className="p-3">Order</th>
                   <th scope="col" className="p-3">Customer</th>

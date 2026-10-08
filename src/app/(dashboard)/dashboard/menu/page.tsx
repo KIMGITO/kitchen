@@ -34,7 +34,7 @@ export default async function MenuManager({ searchParams }: { searchParams: Prom
         <div className="overflow-x-auto rounded-lg border border-line bg-surface shadow-card">
           <table className="w-full text-left text-body">
             <caption className="sr-only">Menu items</caption>
-            <thead className="border-b border-line text-label text-ink-muted/70">
+            <thead className="border-b border-line text-label text-ink-soft">
               <tr>
                 <th scope="col" className="p-3">Item</th>
                 <th scope="col" className="p-3">Category</th>
@@ -54,7 +54,7 @@ export default async function MenuManager({ searchParams }: { searchParams: Prom
                       <Link href={`/dashboard/menu/${p.id}`} className="text-label underline text-ink-muted">{p.name}</Link>
                     </div>
                   </td>
-                  <td className="table-cell text-ink-muted/70">{p.categories?.name ?? '—'}</td>
+                  <td className="table-cell text-ink-soft">{p.categories?.name ?? '—'}</td>
                   <td className="table-cell">{formatMoney(p.price_minor, tenant.currency)}</td>
                   <td className="table-cell">{canManage ? (
                     <form action={setAvailability}>

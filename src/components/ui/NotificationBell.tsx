@@ -36,17 +36,17 @@ export function NotificationBell({ tenantId, audience }: { tenantId: string; aud
 
   return (
     <details className="relative" onToggle={(e) => { if ((e.currentTarget as HTMLDetailsElement).open) void markRead(); }}>
-      <summary className="flex h-10 cursor-pointer list-none items-center gap-2 rounded-pill px-3 text-label text-ink-muted hover:bg-ink/5 transition-colors outline-none" aria-label={`Notifications, ${unread.length} unread`}>
+      <summary className="flex h-10 cursor-pointer list-none items-center gap-2 rounded-pill px-3 text-label text-inherit hover:bg-white/10 transition-colors outline-none" aria-label={`Notifications, ${unread.length} unread`}>
         <Icon name="bell" size={16} />
         <span className="hidden sm:inline">Alerts</span>
         {unread.length > 0 ? <Badge tone="promo">{unread.length}</Badge> : null}
       </summary>
-      <div className="absolute right-0 z-40 mt-2 w-80 max-w-[85vw] rounded-lg border border-line bg-surface p-2 shadow-raised">
-        {items.length === 0 ? <p className="p-3 text-caption text-ink-muted/60">No notifications yet.</p> : (
+      <div className="absolute right-0 z-40 mt-2 w-80 max-w-[85vw] rounded-lg border border-line bg-surface p-2 text-ink shadow-raised">
+        {items.length === 0 ? <p className="p-3 text-caption text-ink-soft">No notifications yet.</p> : (
           <ul>{items.map((n) => (
             <li key={n.id}><Link href={href(n)} className={cn('block rounded-md p-3 transition-colors', n.read_at ? 'hover:bg-surface' : 'font-semibold hover:bg-surface')}>
               <span className={cn('text-body', n.read_at ? 'text-ink-muted' : 'text-ink-muted')}>{n.title}</span>
-              <span className="block text-caption text-ink-muted/60">{new Date(n.created_at).toLocaleString('en-KE', { dateStyle: 'medium', timeStyle: 'short' })}</span>
+              <span className="block text-caption text-ink-soft">{new Date(n.created_at).toLocaleString('en-KE', { dateStyle: 'medium', timeStyle: 'short' })}</span>
             </Link></li>))}
           </ul>)}
       </div>

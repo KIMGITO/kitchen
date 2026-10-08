@@ -11,11 +11,11 @@ export interface BadgeProps {
 
 function toneClass(tone: BadgeProps['tone']): string {
   switch (tone) {
-    case 'brand': return 'bg-brand/15 text-brand';
-    case 'accent': return 'bg-accent/15 text-accent';
+    case 'brand': return 'bg-brand-soft text-brand';
+    case 'accent': return 'bg-accent text-accent-contrast';
     case 'success': return 'bg-success/15 text-success';
     case 'danger': return 'bg-danger/15 text-danger';
-    case 'promo': return 'bg-promo/15 text-promo';
+    case 'promo': return 'bg-accent text-accent-contrast';
     case 'surface':
     case undefined: return 'bg-surface text-ink-muted';
     case 'ghost':

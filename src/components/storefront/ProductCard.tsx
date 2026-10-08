@@ -26,8 +26,8 @@ export function ProductCard({ product, currency }: { product: ProductCardData; c
       </div>
       <div className="flex flex-1 flex-col gap-2 p-4">
         <h3 className="text-h3 text-ink-muted">{product.name}</h3>
-        {product.category_name ? <p className="text-caption text-ink-muted/60">{product.category_name}</p> : null}
-        {meta ? <p className="text-caption text-ink-muted/60">{meta}</p> : null}
+        {product.category_name ? <p className="text-caption text-ink-soft">{product.category_name}</p> : null}
+        {meta ? <p className="text-caption text-ink-soft">{meta}</p> : null}
         <div className="mt-auto pt-3 flex items-center justify-between">
           <p className="text-price text-ink-muted">{formatMoney(product.price_minor, currency)}</p>
           {!product.is_available ? <Badge tone="surface">Sold out</Badge> : null}

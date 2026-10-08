@@ -31,7 +31,7 @@ export default async function Users({ searchParams }: { searchParams: Promise<{ 
     <div className="flex max-w-3xl flex-col gap-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="text-h1 text-ink-muted">Users</h1>
-        <p className="text-body-lg text-ink-muted/70">{rows.length} user{rows.length === 1 ? '' : 's'} listed</p>
+        <p className="text-body-lg text-ink-soft">{rows.length} user{rows.length === 1 ? '' : 's'} listed</p>
       </div>
 
       <nav aria-label="User types" className="flex flex-wrap gap-2">
@@ -49,14 +49,14 @@ export default async function Users({ searchParams }: { searchParams: Promise<{ 
                 <p className="text-h3 text-ink-muted">{r.name}</p>
                 <Badge tone="surface">{r.detail.split(' • ')[2]?.replace(/_/g, ' ') ?? ''}</Badge>
               </div>
-              <p className="mt-1 text-body text-ink-muted/70">{r.detail}</p>
+              <p className="mt-1 text-body text-ink-soft">{r.detail}</p>
             </Card>
           ))}
         </div>
       )}
 
       <Pager page={page} hasMore={more} basePath={`/users?tab=${tab}`} />
-      {tab === 'platform' ? <p className="text-caption text-ink-muted/60">Platform team members are added by the owner in the database (see README).</p> : null}
+      {tab === 'platform' ? <p className="text-caption text-ink-soft">Platform team members are added by the owner in the database (see README).</p> : null}
     </div>
   );
 }

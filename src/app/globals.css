@@ -32,7 +32,7 @@
 
   /* Card elevation system. */
   .card {
-    @apply rounded-lg border border-line/70 bg-surface shadow-card;
+    @apply rounded-lg border border-line bg-surface shadow-card;
   }
   .card-raised {
     @apply card shadow-raised;
@@ -62,7 +62,7 @@
     @apply text-label font-semibold text-ink-muted;
   }
   .field-hint {
-    @apply text-caption text-ink-muted/70;
+    @apply text-caption text-ink-soft;
   }
   .field-error {
     @apply text-caption font-semibold text-danger leading-tight;

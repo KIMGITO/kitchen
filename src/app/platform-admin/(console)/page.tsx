@@ -18,7 +18,7 @@ export default async function AdminHome() {
   return (
     <div className="flex flex-col gap-8">
       <h1 className="text-h1 text-ink-muted">Overview</h1>
-      <p className="text-body-lg text-ink-muted/70">{active} active kitchens • {pending} awaiting approval • {suspended} suspended{refunds > 0 ? <> • <Link href="/finance" className="font-semibold text-danger">{refunds} payments need a refund</Link></> : null}</p>
+      <p className="text-body-lg text-ink-soft">{active} active kitchens • {pending} awaiting approval • {suspended} suspended{refunds > 0 ? <> • <Link href="/finance" className="font-semibold text-danger">{refunds} payments need a refund</Link></> : null}</p>
 
       <section aria-labelledby="q-h">
         <h2 id="q-h" className="mb-3 text-h2 text-ink-muted">Awaiting approval</h2>
@@ -26,7 +26,7 @@ export default async function AdminHome() {
           <ul className="divide-y divide-line">
             {(queue ?? []).map((k: { id: string; name: string; slug: string }) => (
               <li key={k.id} className="flex flex-wrap items-center justify-between gap-3 py-3">
-                <Link href={`/kitchens/${k.id}`} className="underline text-ink-muted">{k.name} <span className="block text-caption text-ink-muted/70">({k.slug})</span></Link>
+                <Link href={`/kitchens/${k.id}`} className="underline text-ink-muted">{k.name} <span className="block text-caption text-ink-soft">({k.slug})</span></Link>
                 {role !== 'support' ? (
                   <form action={setTenantStatus}>
                     <input type="hidden" name="id" value={k.id} />

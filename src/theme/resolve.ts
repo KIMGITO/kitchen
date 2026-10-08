@@ -70,7 +70,12 @@ export function themeToCss(theme: Theme): string {
     vars.push(`--text-${name}-lh: ${t.lineHeight};`);
     vars.push(`--text-${name}-tracking: ${t.tracking};`);
   }
+  const lg: string[] = [];
+  for (const [name, t] of Object.entries(theme.text)) {
+    const big = (t as { sizeLg?: string }).sizeLg;
+    if (big) lg.push(`--text-${name}-size: ${big};`);
+  }
   for (const [k, v] of Object.entries(theme.radius)) vars.push(`--radius-${k}: ${v};`);
   for (const [k, v] of Object.entries(theme.shadows)) vars.push(`--shadow-${k}: ${v};`);
-  return `:root{${vars.join('')}}`;
+  return `:root{${vars.join('')}}@media (min-width:768px){:root{${lg.join('')}}}`;
 }

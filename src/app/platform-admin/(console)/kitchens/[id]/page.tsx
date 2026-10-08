@@ -26,7 +26,7 @@ export default async function KitchenDetail({ params }: { params: Promise<{ id: 
     <div className="flex max-w-3xl flex-col gap-10">
       <div>
         <h1 className="text-h1 text-ink-muted">{t.name}</h1>
-        <p className="text-body text-ink-muted/70">{dom?.hostname} • {t.status.replace('_', ' ')} • {t.contact_email ?? 'no email'} • {orders ?? 0} paid orders</p>
+        <p className="text-body text-ink-soft">{dom?.hostname} • {t.status.replace('_', ' ')} • {t.contact_email ?? 'no email'} • {orders ?? 0} paid orders</p>
       </div>
 
       <section aria-labelledby="bal-h">
@@ -55,7 +55,7 @@ export default async function KitchenDetail({ params }: { params: Promise<{ id: 
           </section>
           <section aria-labelledby="com-h" className="flex flex-col gap-3">
             <h2 id="com-h" className="text-h2 text-ink-muted">Commission</h2>
-            <p className="text-body text-ink-muted/70">Current: {rule ? `${(rule.percent_bps / 100).toFixed(2)}% + ${m(rule.fixed_minor)}` : 'platform default'}.</p>
+            <p className="text-body text-ink-soft">Current: {rule ? `${(rule.percent_bps / 100).toFixed(2)}% + ${m(rule.fixed_minor)}` : 'platform default'}.</p>
             <ActionForm action={setCommission} submitLabel="Save commission" className="grid items-end gap-3 sm:grid-cols-[1fr_1fr_auto_auto]">
               <input type="hidden" name="scope" value="tenant" /><input type="hidden" name="tenant" value={id} />
               <Input label="Percent" name="percent" inputMode="decimal" defaultValue={rule ? String(rule.percent_bps / 100) : ''} />
@@ -77,7 +77,7 @@ export default async function KitchenDetail({ params }: { params: Promise<{ id: 
             </ActionForm>
           </section>
         </div>
-      ) : <p className="text-body text-ink-muted/70">Read-only access.</p>}
+      ) : <p className="text-body text-ink-soft">Read-only access.</p>}
     </div>
   );
 }

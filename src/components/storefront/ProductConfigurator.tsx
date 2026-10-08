@@ -42,7 +42,7 @@ export function ProductConfigurator({ tenantId, currency, product, groups }: Pro
       {groups.map((g) => (
         <Field key={g.id}>
           <legend className="text-h3 text-ink-muted font-semibold">{g.name}</legend>
-          <p className="text-body text-ink-muted/70">
+          <p className="text-body text-ink-soft">
             {g.min_select > 0 ? `Choose ${g.min_select === g.max_select ? g.min_select : `${g.min_select}–${g.max_select}`}` : `Optional, up to ${g.max_select}`}
           </p>
           <div className="flex flex-wrap gap-3">

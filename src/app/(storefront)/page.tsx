@@ -34,7 +34,7 @@ export default async function StorefrontHome() {
         <Section tone="tint">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <h2 className="text-h2 text-ink-muted">Browse the menu</h2>
-            <p className="text-body-lg text-ink-muted/70">Popular categories at {tenant.name}</p>
+            <p className="text-body-lg text-ink-soft">Popular categories at {tenant.name}</p>
           </div>
           <ul className="mt-6 flex flex-wrap gap-3">
             {categories.map((c: { slug: string; name: string }) => (
@@ -49,7 +49,7 @@ export default async function StorefrontHome() {
       <Section>
         <div className="flex items-center justify-between">
           <h2 className="text-h2 text-ink-muted">Popular right now</h2>
-          <p className="text-body-lg text-ink-muted/70">What's selling well this week</p>
+          <p className="text-body-lg text-ink-soft">What's selling well this week</p>
         </div>
         <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
           {products && products.length > 0 ? (

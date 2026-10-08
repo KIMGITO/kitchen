@@ -34,3 +34,22 @@ describe('host classification', () => {
     expect(classifyHost('orders.kitchen-a.com', 'example.com')).toEqual({ kind: 'tenant', hostname: 'orders.kitchen-a.com' });
   });
 });
+
+describe('brand palette accessibility', () => {
+  const c = defaultTheme.colors;
+  it('uses the specified brand colours', () => {
+    expect(c.brand).toBe('#0B4D3C'); expect(c.accent).toBe('#F6A91A');
+    expect(c['surface-alt']).toBe('#F7F6F1'); expect(c.surface).toBe('#F7F6F1'); expect(c.ink).toBe('#161A17'); expect(c['accent-contrast']).toBe('#161A17');
+  });
+  it('keeps text readable on the warm canvas, tags and amber buttons', () => {
+    expect(contrastRatio(c.ink, c['surface-alt'])).toBeGreaterThan(7);
+    expect(contrastRatio(c['ink-soft'], c['surface-alt'])).toBeGreaterThanOrEqual(4.5);
+    expect(contrastRatio(c['ink-soft'], c['tint-alt'])).toBeGreaterThanOrEqual(4.5);
+    expect(contrastRatio(c['accent-contrast'], c.accent)).toBeGreaterThan(7);
+    expect(contrastRatio(c['brand-contrast'], c.brand)).toBeGreaterThan(7);
+  });
+  it('never uses a weight below 400 and gives desktop sizes', () => {
+    for (const t of Object.values(defaultTheme.text)) expect(t.weight).toBeGreaterThanOrEqual(400);
+    expect(themeToCss(defaultTheme)).toContain('@media (min-width:768px)');
+  });
+});

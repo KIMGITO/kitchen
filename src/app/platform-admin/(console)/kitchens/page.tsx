@@ -22,7 +22,7 @@ export default async function Kitchens({ searchParams }: { searchParams: Promise
     <div className="flex flex-col gap-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="text-h1 text-ink-muted">Kitchens</h1>
-        <p className="text-body-lg text-ink-muted/70">{rows.length} kitchen{(rows.length ?? 0) === 1 ? ' is' : 's are'} pending or active</p>
+        <p className="text-body-lg text-ink-soft">{rows.length} kitchen{(rows.length ?? 0) === 1 ? ' is' : 's are'} pending or active</p>
       </div>
 
       <nav aria-label="Filter" className="flex flex-wrap gap-2">
@@ -41,11 +41,11 @@ export default async function Kitchens({ searchParams }: { searchParams: Promise
                 <div className="flex items-start justify-between gap-2">
                   <div className="min-w-0">
                     <p className="truncate text-h3 text-ink-muted">{k.name}</p>
-                    <p className="truncate text-caption text-ink-muted/60">{k.slug}.this-domain</p>
+                    <p className="truncate text-caption text-ink-soft">{k.slug}.this-domain</p>
                   </div>
                   <Badge tone={k.status === 'active' ? 'success' : k.status === 'suspended' ? 'danger' : 'brand'}>{k.status.replace('_', ' ')}</Badge>
                 </div>
-                <p className="text-body text-ink-muted/70">Plan: {sub ? `${sub.plan_key} (${sub.status})` : '—'}</p>
+                <p className="text-body text-ink-soft">Plan: {sub ? `${sub.plan_key} (${sub.status})` : '—'}</p>
                 <div className="flex justify-end">
                   <form action={setTenantStatus} className="inline">
                     <input type="hidden" name="id" value={k.id} />

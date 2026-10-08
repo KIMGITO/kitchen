@@ -16,21 +16,21 @@ export type FontKey = (typeof FONT_KEYS)[number];
 
 /** Colour roles. Hex only; converted to RGB channels for Tailwind alpha support. */
 export const defaultColors = {
-  brand: '#0B4D3C', // deep emerald — hero, nav, primary buttons
+  brand: '#0B4D3C', // Deep Teal Green — header, tab bar, selected states, brand art
   'brand-contrast': '#FFFFFF',
-  'brand-soft': '#E3EFE8', // soft emerald wash for selected / hover states
-  accent: '#F6A91A', // warm amber — the one primary call-to-action
-  'accent-contrast': '#1A1A1A',
+  'brand-soft': '#DCE9E2', // soft emerald wash for selected / hover states
+  accent: '#F6A91A', // Warm Amber — ONLY Order / Add to cart / Checkout, stars, promo tags
+  'accent-contrast': '#161A17', // Near Black text on amber
   'accent-soft': '#FDF1D7', // soft amber wash
-  surface: '#FFFFFF', // cards, sheets
-  'surface-alt': '#F6F5F0', // warm canvas — page background
+  surface: '#F7F6F1', // Soft Warm White — item cards, sheets
+  'surface-alt': '#F7F6F1', // Soft Warm White — app canvas
   tint: '#E7F0D8', // pale green section band
   'tint-alt': '#F1F4EC', // quieter green-tinted surface
-  ink: '#141917', // primary body text
-  'ink-muted': '#3E4641', // secondary body text
-  'ink-soft': '#68736D', // captions, subtle labels
-  line: '#E4E7E1', // dividers / borders
-  'line-soft': '#EDEEE9',
+  ink: '#161A17', // Near Black Ink — headings, prices, body
+  'ink-muted': '#252B27', // body text (still near black)
+  'ink-soft': '#4B6A5C', // subtle dark green — tags, delivery times, captions
+  line: '#D9D6CA', // warm gray — dividers / borders
+  'line-soft': '#E7E4D9',
   promo: '#E8512B', // promotions / secondary CTA
   'promo-soft': '#FDE9E1',
   danger: '#C62828',
@@ -66,28 +66,30 @@ export type FontRole = keyof typeof defaultFonts;
 
 export interface TextStyle {
   font: FontRole;
+  /** Phone size. */
   size: string;
+  /** Tablet / desktop size (>= 768px). Weight stays identical across breakpoints. */
+  sizeLg?: string;
   weight: number;
   lineHeight: string;
   tracking: string;
 }
 
 /**
- * Modern type scale.
- * Display / h1 use fluid clamp so hero headlines scale from mobile → desktop.
- * Body keeps generous 1.6 line-height for readability.
+ * Scale: mobile / desktop. Weights are identical across breakpoints; nothing below 400.
+ *  h1 24 -> 44 (700) · h2 18 -> 30 (600) · body 14 -> 16 (400) · UI 14 -> 16 (500) · caption 12 -> 13 (400)
  */
 export const defaultText = {
-  display: { font: 'display', size: 'clamp(2.75rem, 6vw + 0.75rem, 4.75rem)', weight: 800, lineHeight: '1.02', tracking: '-0.03em' },
-  h1: { font: 'display', size: 'clamp(1.875rem, 3vw + 1rem, 2.875rem)', weight: 800, lineHeight: '1.08', tracking: '-0.022em' },
-  h2: { font: 'display', size: 'clamp(1.375rem, 1.8vw + 0.8rem, 2rem)', weight: 750, lineHeight: '1.15', tracking: '-0.018em' },
-  h3: { font: 'display', size: '1.1875rem', weight: 700, lineHeight: '1.32', tracking: '-0.012em' },
-  body: { font: 'body', size: '1rem', weight: 400, lineHeight: '1.65', tracking: '-0.002em' },
-  'body-lg': { font: 'body', size: '1.125rem', weight: 400, lineHeight: '1.65', tracking: '-0.005em' },
-  label: { font: 'body', size: '0.875rem', weight: 650, lineHeight: '1.35', tracking: '-0.002em' },
-  caption: { font: 'body', size: '0.8125rem', weight: 500, lineHeight: '1.45', tracking: '0' },
-  price: { font: 'display', size: '1.0625rem', weight: 750, lineHeight: '1.2', tracking: '-0.008em' },
-  eyebrow: { font: 'body', size: '0.75rem', weight: 700, lineHeight: '1.3', tracking: '0.08em' },
+  display: { font: 'display', size: '2.25rem', sizeLg: '4rem', weight: 700, lineHeight: '1.05', tracking: '-0.03em' },
+  h1: { font: 'display', size: '1.5rem', sizeLg: '2.75rem', weight: 700, lineHeight: '1.12', tracking: '-0.02em' },
+  h2: { font: 'display', size: '1.125rem', sizeLg: '1.875rem', weight: 600, lineHeight: '1.2', tracking: '-0.015em' },
+  h3: { font: 'display', size: '1rem', sizeLg: '1.1875rem', weight: 600, lineHeight: '1.35', tracking: '-0.01em' },
+  body: { font: 'body', size: '0.875rem', sizeLg: '1rem', weight: 400, lineHeight: '1.6', tracking: '0' },
+  'body-lg': { font: 'body', size: '1rem', sizeLg: '1.125rem', weight: 400, lineHeight: '1.6', tracking: '0' },
+  label: { font: 'body', size: '0.875rem', sizeLg: '1rem', weight: 500, lineHeight: '1.35', tracking: '0' },
+  caption: { font: 'body', size: '0.75rem', sizeLg: '0.8125rem', weight: 400, lineHeight: '1.45', tracking: '0' },
+  price: { font: 'display', size: '0.875rem', sizeLg: '1rem', weight: 700, lineHeight: '1.2', tracking: '-0.005em' },
+  eyebrow: { font: 'body', size: '0.75rem', sizeLg: '0.75rem', weight: 600, lineHeight: '1.3', tracking: '0.08em' },
 } as const satisfies Record<string, TextStyle>;
 export type TextRole = keyof typeof defaultText;
 

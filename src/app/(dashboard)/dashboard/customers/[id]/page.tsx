@@ -28,7 +28,7 @@ export default async function CustomerDetail({ params }: { params: Promise<{ id:
     <div className="flex max-w-3xl flex-col gap-8">
       <div>
         <h1 className="text-h1 text-ink-muted">{c.full_name}</h1>
-        <p className="text-body text-ink-muted/70">{[c.phone, c.email].filter(Boolean).join(' • ')} • Customer since {new Date(c.created_at).toLocaleDateString('en-KE', { dateStyle: 'medium' })}</p>
+        <p className="text-body text-ink-soft">{[c.phone, c.email].filter(Boolean).join(' • ')} • Customer since {new Date(c.created_at).toLocaleDateString('en-KE', { dateStyle: 'medium' })}</p>
         <p className="mt-1 text-body">{stat?.paid_orders ?? 0} paid orders • {formatMoney(stat?.total_spent_minor ?? 0, tenant.currency)} spent</p>
       </div>
 
@@ -55,14 +55,14 @@ export default async function CustomerDetail({ params }: { params: Promise<{ id:
 
       <section aria-labelledby="a-h">
         <h2 id="a-h" className="mb-2 text-h2 text-ink-muted">Addresses</h2>
-        {(addresses ?? []).length === 0 ? <p className="text-body text-ink-muted/70">No saved addresses.</p> : (
+        {(addresses ?? []).length === 0 ? <p className="text-body text-ink-soft">No saved addresses.</p> : (
           <ul className="divide-y divide-line">
             {(addresses ?? []).map((a: { id: string; label: string | null; address_line: string; area: string | null }) => (
               <li key={a.id} className="flex items-center justify-between gap-3 py-3">
                 <div>
                   {a.label ? <strong className="text-label text-ink-muted">{a.label}: </strong> : null}
                   <span className="text-body text-ink-muted">{a.address_line}</span>
-                  {a.area ? <span className="text-caption text-ink-muted/70">, {a.area}</span> : null}
+                  {a.area ? <span className="text-caption text-ink-soft">, {a.area}</span> : null}
                 </div>
                 <form action={deleteAddress}>
                   <input type="hidden" name="id" value={a.id} />
@@ -76,13 +76,13 @@ export default async function CustomerDetail({ params }: { params: Promise<{ id:
 
       <section aria-labelledby="o-h">
         <h2 id="o-h" className="mb-2 text-h2 text-ink-muted">Orders</h2>
-        {(orders ?? []).length === 0 ? <p className="text-body text-ink-muted/70">No orders yet.</p> : (
+        {(orders ?? []).length === 0 ? <p className="text-body text-ink-soft">No orders yet.</p> : (
           <ul className="divide-y divide-line">
             {(orders ?? []).map((o: { id: string; order_number: number; status: OrderStatus; total_minor: number; created_at: string }) => (
               <li key={o.id} className="flex items-center justify-between gap-3 py-3">
                 <div>
                   <span className="text-label text-ink-muted">#{o.order_number}</span>
-                  <span className="text-caption text-ink-muted/70">{new Date(o.created_at).toLocaleDateString('en-KE', { dateStyle: 'medium' })}</span>
+                  <span className="text-caption text-ink-soft">{new Date(o.created_at).toLocaleDateString('en-KE', { dateStyle: 'medium' })}</span>
                 </div>
                 <span className="flex items-center gap-3">
                   <StatusBadge status={o.status} />

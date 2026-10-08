@@ -35,7 +35,7 @@ export default async function DashboardLayout({ children }: { children: ReactNod
           </span>
           {perms.can('orders.view') ? <NotificationBell tenantId={tenant.id} audience="kitchen" /> : null}
         </div>
-        {tenant.status !== 'active' ? <p className="mx-3 mb-2 rounded-md bg-accent/20 px-3 py-2 text-caption text-accent-contrast">Your storefront is {tenant.status === 'pending_approval' ? 'waiting for approval' : 'not live'}. Customers cannot see it yet.</p> : null}
+        {tenant.status !== 'active' ? <p className="mx-3 mb-2 rounded-md bg-tint-alt border border-line px-3 py-2 text-caption text-ink">Your storefront is {tenant.status === 'pending_approval' ? 'waiting for approval' : 'not live'}. Customers cannot see it yet.</p> : null}
         <nav aria-label="Dashboard" className="flex gap-1 overflow-x-auto px-3 pb-3 md:flex-col md:pb-0">
           {NAV.filter((n) => n.perm === null || perms.can(n.perm)).map((n) => (
             <NavLink key={n.href} href={n.href}>{n.label}</NavLink>

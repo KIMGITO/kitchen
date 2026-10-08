@@ -8,7 +8,7 @@ export function CartLink({ tenantId }: { tenantId: string }) {
   const lines = useCartStore(selectLines(tenantId));
   const count = cartCount(lines);
   return (
-    <Link href="/cart" className="rounded-pill px-3 py-2 text-label hover:bg-ink/5" aria-label={`Cart, ${count} items`}>
+    <Link href="/cart" className="rounded-pill px-3 py-2 text-label text-brand-contrast hover:bg-white/10" aria-label={`Cart, ${count} items`}>
       Cart ({count})
     </Link>
   );

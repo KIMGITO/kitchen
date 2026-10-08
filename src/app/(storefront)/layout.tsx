@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 import { getActiveTenant } from '@/lib/tenant/get-tenant';
 import { getUser } from '@/lib/auth/session';
 import { CustomerHeader } from '@/components/storefront/CustomerHeader';
+import { BottomTabBar } from '@/components/storefront/BottomTabBar';
 import { OpeningHours } from '@/components/storefront/OpeningHours';
 
 export default async function StorefrontLayout({ children }: { children: ReactNode }) {
@@ -9,7 +10,7 @@ export default async function StorefrontLayout({ children }: { children: ReactNo
   return (
     <>
       <CustomerHeader tenant={tenant} signedIn={!!user} />
-      <main id="main">{children}</main>
+      <main id="main" className="pb-16 md:pb-0">{children}</main>
       <footer className="border-t border-line bg-surface-alt">
         <div className="mx-auto max-w-6xl px-4 py-8 text-caption text-ink-soft sm:px-6">
           <p className="text-label text-ink">{tenant.name}</p>
@@ -18,6 +19,7 @@ export default async function StorefrontLayout({ children }: { children: ReactNo
           <OpeningHours hours={tenant.opening_hours} />
         </div>
       </footer>
+      <BottomTabBar />
     </>
   );
 }

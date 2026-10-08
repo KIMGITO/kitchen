@@ -16,7 +16,7 @@ export default async function AdminLayout({ children }: { children: ReactNode })
         <div className="flex items-center gap-2 px-5 py-4">
           <Icon name="shield" size={18} className="text-brand" />
           <span className="text-h3 text-ink-muted">Codensons</span>
-          <span className="ml-auto text-caption text-ink-muted/60">{role}{role === 'support' ? ' (read-only)' : ''}</span>
+          <span className="ml-auto text-caption text-ink-soft">{role}{role === 'support' ? ' (read-only)' : ''}</span>
         </div>
         <nav aria-label="Admin" className="flex gap-1 overflow-x-auto px-3 pb-3 md:flex-col">
           {NAV.map(([h, l]) => <NavLink key={h} href={h} alwaysActive={h === '/'}>{l}</NavLink>)}

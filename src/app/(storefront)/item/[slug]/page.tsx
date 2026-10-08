@@ -52,7 +52,7 @@ export default async function ItemPage({ params }: { params: Params }) {
         <div className="flex flex-col gap-4">
           <h1 className="text-h1 text-ink-muted">{product.name}</h1>
           <p className="text-price text-ink-muted">{formatMoney(product.price_minor, tenant.currency)}</p>
-          {product.description ? <p className="text-body-lg text-ink-muted/70">{product.description}</p> : null}
+          {product.description ? <p className="text-body-lg text-ink-soft">{product.description}</p> : null}
           <ProductConfigurator tenantId={tenant.id} currency={tenant.currency} groups={optionGroups}
             product={{ id: product.id, name: product.name, image_url: product.image_url, price_minor: product.price_minor, is_available: product.is_available }} />
         </div>

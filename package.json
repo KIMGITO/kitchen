@@ -11,6 +11,7 @@
     "db:types": "supabase gen types typescript --local > src/lib/supabase/database.types.ts"
   },
   "dependencies": {
+    "@phosphor-icons/react": "^2.1.10",
     "@supabase/ssr": "^0.5.2",
     "@supabase/supabase-js": "^2.46.1",
     "clsx": "^2.1.1",

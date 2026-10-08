@@ -23,15 +23,15 @@ export default async function StaffPage() {
   return (
     <div className="flex max-w-3xl flex-col gap-8">
       <h1 className="text-h1 text-ink-muted">Staff</h1>
-      <p className="text-body text-ink-muted/70">{members.filter((m) => m.is_active).length} active{limit === null ? '' : ` of ${limit} allowed on your plan`}.</p>
+      <p className="text-body text-ink-soft">{members.filter((m) => m.is_active).length} active{limit === null ? '' : ` of ${limit} allowed on your plan`}.</p>
 
-      {(members ?? []).length === 0 ? <p className="text-body text-ink-muted/70">No staff members yet.</p> : (
+      {(members ?? []).length === 0 ? <p className="text-body text-ink-soft">No staff members yet.</p> : (
         <ul className="divide-y divide-line">
           {(members ?? []).map((m) => (
             <li key={m.member_id} className="flex flex-wrap items-center justify-between gap-3 py-3">
               <div>
                 <p className="text-label text-ink-muted">{m.full_name ?? m.email}{m.user_id === user?.id ? ' (you)' : ''}</p>
-                <p className="text-caption text-ink-muted/70">{m.email}{m.is_active ? '' : ' • deactivated'}</p>
+                <p className="text-caption text-ink-soft">{m.email}{m.is_active ? '' : ' • deactivated'}</p>
               </div>
               {manage ? (
                 <div className="flex flex-wrap items-center gap-2">
@@ -70,7 +70,7 @@ export default async function StaffPage() {
                 </select>
               </label>
             </ActionForm>
-            <p className="text-caption text-ink-muted/60">Invitations are shared as a link; they are not emailed yet. Each link works once and expires in 7 days.</p>
+            <p className="text-caption text-ink-soft">Invitations are shared as a link; they are not emailed yet. Each link works once and expires in 7 days.</p>
           </section>
 
           {(invites ?? []).length > 0 ? (
@@ -80,7 +80,7 @@ export default async function StaffPage() {
                 {(invites ?? []).map((i: { id: string; email: string; role_key: string }) => (
                   <li key={i.id} className="flex items-center justify-between gap-3 py-3">
                     <span>
-                      {i.email} <span className="text-caption text-ink-muted/70">as {ROLES.find(([k]) => k === i.role_key)?.[1]}</span>
+                      {i.email} <span className="text-caption text-ink-soft">as {ROLES.find(([k]) => k === i.role_key)?.[1]}</span>
                     </span>
                     <form action={revokeInvitation}>
                       <input type="hidden" name="id" value={i.id} />
