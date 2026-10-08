@@ -4,6 +4,8 @@ import { publicEnv } from '@/lib/env';
 
 /** Refreshes the Supabase session cookie (host-only) and returns the response to continue with. */
 export async function refreshSession(request: NextRequest, response: NextResponse) {
+  // Anonymous visitors (most storefront traffic) have no session to refresh: skip the Auth-server round trip.
+  if (!request.cookies.getAll().some((c) => c.name.startsWith('sb-'))) return response;
   const supabase = createServerClient(publicEnv.supabaseUrl, publicEnv.supabaseAnonKey, {
     cookies: {
       getAll: () => request.cookies.getAll(),

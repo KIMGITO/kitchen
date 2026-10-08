@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { Button } from '@/components/ui/Button';
@@ -24,14 +24,16 @@ export function OrderBoard({ orders, permissions, currency }: { orders: BoardOrd
   const router = useRouter();
   const [busyId, setBusyId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [, startTransition] = useTransition();
   const can = (p: string) => permissions.includes(p);
 
   async function move(order: BoardOrder, to: OrderStatus) {
     if ((to === 'CANCELLED' || to === 'REJECTED') && !confirm(`${to === 'REJECTED' ? 'Decline' : 'Cancel'} order #${order.order_number}? The customer will be notified and a refund will be arranged.`)) return;
     setBusyId(order.id); setError(null);
     const { error: err } = await createClient().rpc('transition_order', { p_order: order.id, p_to: to });
-    setBusyId(null);
-    if (err) setError(friendlyError(err.message)); else router.refresh();
+    if (err) { setBusyId(null); setError(friendlyError(err.message)); return; }
+    // Stay busy until the server has re-rendered, so there is no dead moment after the click.
+    startTransition(() => { router.refresh(); setBusyId(null); });
   }
 
   return (

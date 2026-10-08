@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
 import './globals.css';
-import { allFontClassNames } from '@/theme/fonts';
+import { fontVariables } from '@/theme/fonts';
 import { defaultTheme } from '@/theme/theme';
 import { themeToCss } from '@/theme/resolve';
 import { getTenantOptional } from '@/lib/tenant/get-tenant';
@@ -23,9 +23,11 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function RootLayout({ children }: { children: ReactNode }) {
   const tenant = await getTenantOptional();
-  const css = themeToCss(tenant?.theme ?? defaultTheme);
+  const theme = tenant?.theme ?? defaultTheme;
+  const css = themeToCss(theme);
+  const fontClasses = Array.from(new Set(Object.values(theme.fonts).map((k) => fontVariables[k]))).join(' ');
   return (
-    <html lang="en" className={allFontClassNames}>
+    <html lang="en" className={fontClasses}>
       <head>
         {/* Server-generated from validated theme tokens only; contains no user-supplied strings. */}
         <style dangerouslySetInnerHTML={{ __html: css }} />

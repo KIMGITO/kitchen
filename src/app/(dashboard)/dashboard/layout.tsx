@@ -21,9 +21,8 @@ const NAV = [
 ] as const;
 
 export default async function DashboardLayout({ children }: { children: ReactNode }) {
-  const [tenant, user] = await Promise.all([getTenant(), getUser()]);
+  const [tenant, user, perms] = await Promise.all([getTenant(), getUser(), getPermissions()]);
   if (!user) redirect('/staff-login?next=/dashboard');
-  const perms = await getPermissions();
   if (perms.toArray().length === 0) redirect('/');
 
   return (
