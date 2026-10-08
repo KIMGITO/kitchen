@@ -32,7 +32,7 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
         {/* Server-generated from validated theme tokens only; contains no user-supplied strings. */}
         <style dangerouslySetInnerHTML={{ __html: css }} />
       </head>
-      <body>{children}</body>
+      <body suppressHydrationWarning>{children}</body>
     </html>
   );
 }

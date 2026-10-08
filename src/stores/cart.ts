@@ -56,6 +56,8 @@ export const useCartStore = create<CartState>()(
   ),
 );
 
-export const selectLines = (tenantId: string) => (s: CartState) => s.carts[tenantId] ?? [];
+/** Must return the SAME array for an empty cart every time, or useSyncExternalStore loops forever. */
+const EMPTY_LINES: CartLine[] = Object.freeze([]) as unknown as CartLine[];
+export const selectLines = (tenantId: string) => (s: CartState) => s.carts[tenantId] ?? EMPTY_LINES;
 export const cartCount = (lines: CartLine[]) => lines.reduce((n, l) => n + l.quantity, 0);
 export const cartSubtotal = (lines: CartLine[]) => lines.reduce((n, l) => n + l.quantity * l.unitPriceMinor, 0);

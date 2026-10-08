@@ -14,6 +14,7 @@ const NAV = [
   { href: '/dashboard', label: 'Overview', perm: null },
   { href: '/dashboard/orders', label: 'Orders', perm: 'orders.view' },
   { href: '/dashboard/menu', label: 'Menu', perm: 'menu.view' },
+  { href: '/dashboard/promotions', label: 'Promotions', perm: 'menu.manage' },
   { href: '/dashboard/customers', label: 'Customers', perm: 'customers.view' },
   { href: '/dashboard/transactions', label: 'Transactions', perm: 'finance.view' },
   { href: '/dashboard/staff', label: 'Staff', perm: 'staff.view' },
