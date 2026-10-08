@@ -37,6 +37,10 @@ const nextConfig = {
     loaderFile: './src/lib/images/supabase-loader.ts',
     formats: ['image/avif', 'image/webp'],
   },
+  experimental: {
+    workerThreads: false, 
+    webpackMemoryOptimizations: true, 
+  },
   poweredByHeader: false,
   async headers() {
     return [
