@@ -178,7 +178,7 @@ export function Section({
 
   return (
     <section
-      className={cn(isInset && 'px-4 py-4 sm:px-6', className)}
+      className={cn(isInset && '', className)}
       style={style}
       {...rest}
     >

@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { createClient } from '@/lib/supabase/server';
 import { Section } from '@/components/ui/Section';
 import { formatMoney } from '@/lib/commerce/money';
+import PricingPlans from '@/components/global/PricingPlans';
 
 export const metadata = { title: 'Codensons — your kitchen, online' };
 
@@ -24,12 +25,12 @@ export default async function PlatformHome() {
     ],
   );
   return (
-    <>
+    <div className="flex flex-col  bg-brand">
       <Section
         overlay={8}
         blur="left"
         rounded={'5xl'}
-        corners={'br'}
+        corners={['br']}
         blurLevel={8}
         align="left"
         imageUrl="https://images.unsplash.com/photo-1665332195309-9d75071138f0?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8a2VueWFuJTIwZm9vZHxlbnwwfHwwfHx8MA%3D%3D"
@@ -50,39 +51,25 @@ export default async function PlatformHome() {
           </Link>
         </div>
       </Section>
-      <Section>
+      <Section 
+      // className='border-0 bg-gradient-to-tr from-white  to-brand'
+      tone='brand'
+      rounded={'5xl'}
+      corners={'tl'}
+
+
+      >
         <h2 className="text-h2">Plans</h2>
         {(plans ?? []).length === 0 ? (
           <p className="mt-4 text-ink-soft">Plans will be listed here soon.</p>
         ) : (
-          <ul className="mt-6 grid gap-4 md:grid-cols-3">
-            {(plans ?? []).map(
-              (p: { key: string; name: string; price_minor: number }) => (
-                <li key={p.key} className="rounded-lg border border-line p-5">
-                  <h3 className="text-h3">{p.name}</h3>
-                  <p className="mt-1 text-price">
-                    {p.price_minor > 0
-                      ? `${formatMoney(p.price_minor)} / month`
-                      : 'Pricing on request'}
-                  </p>
-                  <ul className="mt-3 flex flex-col gap-1 text-body text-ink-soft">
-                    {(features ?? [])
-                      .filter((f: { key: string }) =>
-                        (pf ?? []).some(
-                          (x: { plan_key: string; feature_key: string }) =>
-                            x.plan_key === p.key && x.feature_key === f.key,
-                        ),
-                      )
-                      .map((f: { key: string; description: string }) => (
-                        <li key={f.key}>{f.description}</li>
-                      ))}
-                  </ul>
-                </li>
-              ),
-            )}
-          </ul>
+         <PricingPlans  
+         plans={plans}
+         features={features}
+         pf={pf}
+         />
         )}
       </Section>
-    </>
+    </div>
   );
 }

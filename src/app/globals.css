@@ -3,11 +3,18 @@
 @tailwind utilities;
 
 @layer base {
-  html { -webkit-text-size-adjust: 100%; }
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
   body {
     @apply bg-surface-alt font-body text-ink-muted antialiased;
   }
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     @apply font-display tracking-tight;
   }
   a:focus-visible,
@@ -16,7 +23,9 @@
     outline-offset: 2px;
   }
   @media (prefers-reduced-motion: reduce) {
-    *, *::before, *::after {
+    *,
+    *::before,
+    *::after {
       animation-duration: 0.01ms !important;
       transition-duration: 0.01ms !important;
     }
@@ -56,8 +65,13 @@
   .field {
     @apply flex flex-col gap-1.5;
   }
-  .field--error .field-label { color: rgb(var(--color-danger)); }
-  .field--error .field-input { border-color: rgb(var(--color-danger)); box-shadow: 0 0 0 1px rgb(var(--color-danger)); }
+  .field--error .field-label {
+    color: rgb(var(--color-danger));
+  }
+  .field--error .field-input {
+    border-color: rgb(var(--color-danger));
+    box-shadow: 0 0 0 1px rgb(var(--color-danger));
+  }
   .field-label {
     @apply text-label font-semibold text-ink-muted;
   }
@@ -77,28 +91,52 @@
   .pill {
     @apply inline-flex items-center rounded-full px-3 py-1 text-caption font-semibold;
   }
-  .pill--ghost { @apply border border-line/60 text-ink-muted; }
-  .pill--ghost:hover { @apply bg-ink/5; }
-  .pill--surface { @apply bg-surface text-ink-muted; }
+  .pill--ghost {
+    @apply border border-line/60 text-ink-muted;
+  }
+  .pill--ghost:hover {
+    @apply bg-ink/5;
+  }
+  .pill--surface {
+    @apply bg-surface text-ink-muted;
+  }
 
   /* Table/grid row hover and dividers. */
-  .table-row { @apply border-b border-line/60 last:border-0; }
-  .table-row:hover { @apply bg-surface; }
+  .table-row {
+    @apply border-b border-line/60 last:border-0;
+  }
+  .table-row:hover {
+    @apply bg-surface;
+  }
   .table-head {
     @apply text-label font-semibold text-ink-muted/70 uppercase tracking-wide;
   }
-  .table-cell { @apply p-3 text-body text-ink-muted; }
-  .table-cell--right { @apply text-right; }
-  .table-caption { @apply sr-only; }
+  .table-cell {
+    @apply p-3 text-body text-ink-muted;
+  }
+  .table-cell--right {
+    @apply text-right;
+  }
+  .table-caption {
+    @apply sr-only;
+  }
 
   /* Skeleton / shimmer loading state (subtle, modern). */
   .skeleton {
     @apply animate-pulse rounded-md bg-line/60;
   }
-  .skeleton-short { @apply h-3 w-3/4; }
-  .skeleton-medium { @apply h-4 w-1/2; }
-  .skeleton-card { @apply h-40 w-full rounded-md bg-line/50; }
-  .skeleton-text { @apply h-3 w-full rounded animate-pulse bg-line/60; }
+  .skeleton-short {
+    @apply h-3 w-3/4;
+  }
+  .skeleton-medium {
+    @apply h-4 w-1/2;
+  }
+  .skeleton-card {
+    @apply h-40 w-full rounded-md bg-line/50;
+  }
+  .skeleton-text {
+    @apply h-3 w-full rounded animate-pulse bg-line/60;
+  }
 
   /* Linear gradient shimmer for full-width loading bars. */
   .shimmer-bar {
@@ -110,9 +148,15 @@
 
 /* ---------- Motion utilities ---------- */
 @layer utilities {
-  .animate-fade-in { animation: fadeIn 0.45s ease-out both; }
-  .animate-fade-in-fast { animation: fadeIn 0.25s ease-out both; }
-  .animate-slide-up { animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) both; }
+  .animate-fade-in {
+    animation: fadeIn 0.45s ease-out both;
+  }
+  .animate-fade-in-fast {
+    animation: fadeIn 0.25s ease-out both;
+  }
+  .animate-slide-up {
+    animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
   .animate-shimmer {
     @apply bg-gradient-to-r from-line/30 via-line/10 to-line/30;
     background-size: 200% 100%;
@@ -123,48 +167,193 @@
   }
 
   @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
   }
   @keyframes slideUp {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
   @keyframes shimmer {
-    0% { background-position: 200% 0; }
-    100% { background-position: -200% 0; }
+    0% {
+      background-position: 200% 0;
+    }
+    100% {
+      background-position: -200% 0;
+    }
   }
   @keyframes float {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-8px); }
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-8px);
+    }
   }
 }
 
 /* ---------- Storefront motion (all respect prefers-reduced-motion) ---------- */
 @layer utilities {
   /* Scroll-driven reveal: pure CSS, progressive enhancement (content is visible where unsupported). */
-  @keyframes revealUp { from { opacity: 0; transform: translateY(28px) scale(0.98); } to { opacity: 1; transform: none; } }
+  @keyframes revealUp {
+    from {
+      opacity: 0;
+      transform: translateY(28px) scale(0.98);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
   @supports (animation-timeline: view()) {
-    .reveal { animation: revealUp linear both; animation-timeline: view(); animation-range: entry 4% cover 26%; }
+    .reveal {
+      animation: revealUp linear both;
+      animation-timeline: view();
+      animation-range: entry 4% cover 26%;
+    }
   }
   /* Hero entrance: children rise in one after another (set --i on each child). */
-  .rise-in > * { animation: slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) both; animation-delay: calc(var(--i, 0) * 90ms); }
-  .rise-in > *:nth-child(1) { --i: 0; } .rise-in > *:nth-child(2) { --i: 1; } .rise-in > *:nth-child(3) { --i: 2; }
-  .rise-in > *:nth-child(4) { --i: 3; } .rise-in > *:nth-child(5) { --i: 4; }
+  .rise-in > * {
+    animation: slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+    animation-delay: calc(var(--i, 0) * 90ms);
+  }
+  .rise-in > *:nth-child(1) {
+    --i: 0;
+  }
+  .rise-in > *:nth-child(2) {
+    --i: 1;
+  }
+  .rise-in > *:nth-child(3) {
+    --i: 2;
+  }
+  .rise-in > *:nth-child(4) {
+    --i: 3;
+  }
+  .rise-in > *:nth-child(5) {
+    --i: 4;
+  }
 
-  @keyframes kenBurns { from { transform: scale(1.18) translate3d(0, 0, 0); } to { transform: scale(1.3) translate3d(-2%, -1.5%, 0); } }
-  .animate-ken-burns { animation: kenBurns 28s ease-in-out infinite alternate; }
-  @keyframes blobDrift { 0%, 100% { transform: translate3d(0, 0, 0) scale(1); } 50% { transform: translate3d(4%, -6%, 0) scale(1.12); } }
-  .animate-blob { animation: blobDrift 14s ease-in-out infinite; }
-  @keyframes pop { 0% { transform: scale(0.8); opacity: 0; } 60% { transform: scale(1.08); } 100% { transform: scale(1); opacity: 1; } }
-  .animate-pop { animation: pop 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) both; }
+  @keyframes kenBurns {
+    from {
+      transform: scale(1.18) translate3d(0, 0, 0);
+    }
+    to {
+      transform: scale(1.3) translate3d(-2%, -1.5%, 0);
+    }
+  }
+  .animate-ken-burns {
+    animation: kenBurns 28s ease-in-out infinite alternate;
+  }
+  @keyframes blobDrift {
+    0%,
+    100% {
+      transform: translate3d(0, 0, 0) scale(1);
+    }
+    50% {
+      transform: translate3d(4%, -6%, 0) scale(1.12);
+    }
+  }
+  .animate-blob {
+    animation: blobDrift 14s ease-in-out infinite;
+  }
+  @keyframes pop {
+    0% {
+      transform: scale(0.8);
+      opacity: 0;
+    }
+    60% {
+      transform: scale(1.08);
+    }
+    100% {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+  .animate-pop {
+    animation: pop 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  }
 
   /* Horizontal scroller with snap points and hidden scrollbar. */
-  .snap-row { display: flex; gap: 1rem; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; -webkit-overflow-scrolling: touch; padding-bottom: 0.25rem; }
-  .snap-row::-webkit-scrollbar { display: none; }
-  .snap-row > * { scroll-snap-align: start; flex: none; }
+  .snap-row {
+    display: flex;
+    gap: 1rem;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 0.25rem;
+  }
+  .snap-row::-webkit-scrollbar {
+    display: none;
+  }
+  .snap-row > * {
+    scroll-snap-align: start;
+    flex: none;
+  }
 
   @media (prefers-reduced-motion: reduce) {
-    .reveal, .rise-in > *, .animate-ken-burns, .animate-blob, .animate-pop, .animate-float { animation: none !important; }
+    .reveal,
+    .rise-in > *,
+    .animate-ken-burns,
+    .animate-blob,
+    .animate-pop,
+    .animate-float {
+      animation: none !important;
+    }
   }
+}
+
+/* ==========================================
+   1. REMOVE SCROLLBARS (ALL BROWSERS)
+   ========================================== */
+
+/* Firefox */
+* {
+  scrollbar-width: none;
+}
+
+/* Internet Explorer and Legacy Edge */
+* {
+  -ms-overflow-style: none;
+}
+
+/* Chrome, Safari, Edge (Chromium), Opera */
+::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+/* Optional: iOS Safari bounce & scroll indicator cleanup */
+html,
+body {
+  -webkit-overflow-scrolling: touch;
+}
+
+/* ==========================================
+   2. REMOVE NUMBER INPUT ARROWS / SPINNERS
+   ========================================== */
+
+/* Chrome, Safari, Edge, Opera */
+input[type='number']::-webkit-outer-spin-button,
+input[type='number']::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type='number'] {
+  -moz-appearance: textfield;
+  appearance: textfield;
 }
