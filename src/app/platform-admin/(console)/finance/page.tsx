@@ -95,7 +95,7 @@ export default async function Finance() {
           <div className="overflow-x-auto rounded-lg bg-surface shadow-card"><table className="w-full text-left"><caption className="sr-only">Kitchen balances</caption>
             <thead className="border-b border-line text-label text-ink-soft"><tr><th scope="col" className="p-3">Kitchen</th><th scope="col" className="p-3 text-right">Gross sales</th><th scope="col" className="p-3 text-right">Commission</th><th scope="col" className="p-3 text-right">Outstanding</th></tr></thead>
             <tbody>{((balances ?? []) as unknown as { tenant_id: string; gross_sales_minor: number; commission_minor: number; outstanding_minor: number }[]).map((b) => (
-              <tr key={b.tenant_id} className="border-b border-line last:border-0"><td className="p-3">{nameOf.get(b.tenant_id)}</td><td className="p-3 text-right">{m(b.gross_sales_minor)}</td><td className="p-3 text-right">{m(b.commission_minor)}</td><td className="p-3 text-right font-semibold">{m(b.outstanding_minor)}</td></tr>))}</tbody></table></div>)}</section>
+              <tr key={b.tenant_id} className="border-b border-line last:border-0"><td className="p-3">{nameOf.get(b.tenant_id)}</td><td className="p-3 text-right">{m(b.gross_sales_minor)}</td><td className="p-3 text-right">{m(b.commission_minor)}</td><td className="p-3 text-right ">{m(b.outstanding_minor)}</td></tr>))}</tbody></table></div>)}</section>
 
       <section aria-labelledby="pay-h"><h2 id="pay-h" className="mb-3 text-h2">Recent payments</h2>
         {(payments ?? []).length === 0 ? <p className="text-body text-ink-soft">No payments yet.</p> : (

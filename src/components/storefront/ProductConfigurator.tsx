@@ -41,7 +41,7 @@ export function ProductConfigurator({ tenantId, currency, product, groups }: Pro
     <div className="flex flex-col gap-6">
       {groups.map((g) => (
         <Field key={g.id}>
-          <legend className="text-h3 text-ink-muted font-semibold">{g.name}</legend>
+          <legend className="text-h3 text-ink-muted ">{g.name}</legend>
           <p className="text-body text-ink-soft">
             {g.min_select > 0 ? `Choose ${g.min_select === g.max_select ? g.min_select : `${g.min_select}–${g.max_select}`}` : `Optional, up to ${g.max_select}`}
           </p>
@@ -69,7 +69,7 @@ export function ProductConfigurator({ tenantId, currency, product, groups }: Pro
           <button type="button" className="flex size-11 items-center justify-center rounded-pill text-h3 text-ink-muted hover:bg-ink/5 transition-colors" aria-label="Decrease quantity" onClick={() => setQuantity((q) => Math.max(1, q - 1))}>
             <Icon name="minus" size={16} />
           </button>
-          <span className="w-8 text-center text-label font-semibold text-ink-muted" aria-live="polite">{quantity}</span>
+          <span className="w-8 text-center text-label text-ink-muted" aria-live="polite">{quantity}</span>
           <button type="button" className="flex size-11 items-center justify-center rounded-pill text-h3 text-ink-muted hover:bg-ink/5 transition-colors" aria-label="Increase quantity" onClick={() => setQuantity((q) => Math.min(99, q + 1))}>
             <Icon name="plus" size={16} />
           </button>

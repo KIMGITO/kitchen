@@ -53,7 +53,7 @@ export function PlatformSetup({ signedInEmail, adminLoginUrl }: { signedInEmail:
         <Input label="Email" name="email" type="email" required />
         <Input label="Password" name="password" type="password" required minLength={8} />
         {authError ? <p role="alert" className="text-caption text-danger">{authError}</p> : null}
-        <Button type="submit" loading={busy}>{mode === 'signup' ? 'Create account' : 'Log in'}</Button>
+        <Button type="submit" loading={busy} loadingText={mode === 'signup' ? 'Creating account…' : 'Logging in…'} autoLoading={false}>{mode === 'signup' ? 'Create account' : 'Log in'}</Button>
         <button type="button" className="text-left text-caption underline" onClick={() => setMode(mode === 'signup' ? 'login' : 'signup')}>{mode === 'signup' ? 'I already have an account' : 'I need to create an account'}</button>
       </form>
     );
@@ -63,7 +63,7 @@ export function PlatformSetup({ signedInEmail, adminLoginUrl }: { signedInEmail:
       <p className="text-caption text-ink-soft">Signed in as {email}</p>
       <p className="text-body text-ink-soft">This makes your account the <strong>owner of the whole platform</strong>: approve or block kitchens, set plans and commissions, and control payouts. It only works while no owner exists yet — after that the setup page closes forever.</p>
       {state && !state.ok ? <p role="alert" className="text-caption text-danger">{state.error}</p> : null}
-      <Button type="submit" loading={pending}>Make me the platform owner</Button>
+      <Button type="submit" loading={pending} loadingText="Claiming…">Make me the platform owner</Button>
     </form>
   );
 }

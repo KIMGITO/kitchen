@@ -17,5 +17,5 @@ const tone: Record<OrderStatus, string> = {
 };
 
 export function StatusBadge({ status }: { status: OrderStatus }) {
-  return <span className={cn('inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-caption font-semibold', tone[status])}>{STATUS_LABEL[status]}</span>;
+  return <span className={cn('inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-caption ', tone[status])}>{STATUS_LABEL[status]}</span>;
 }

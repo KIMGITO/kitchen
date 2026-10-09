@@ -120,20 +120,20 @@ export const PricingPlans: React.FC<PricingPlansProps> = ({
               />
               {badgeLabel && (
                 <span
-                  className={`absolute -top-3.5 right-6 rounded-pill px-3.5 py-1 font-body text-caption font-bold uppercase tracking-wider shadow-card ${t.badge}`}
+                  className={`absolute -top-3.5 right-6 rounded-pill px-3.5 py-1 font-sans text-caption uppercase tracking-wider shadow-card ${t.badge}`}
                 >
                   {badgeLabel}
                 </span>
               )}
               <div>
                 <header className="border-b border-line-soft pb-6">
-                  <h3 className="font-display text-h3 font-semibold tracking-tight text-ink">
+                  <h3 className="font-display text-h3 tracking-tight text-ink">
                     {p.name}
                   </h3>
                   <div className="mt-4 flex flex-wrap items-baseline gap-x-2">
                     {p.price_minor > 0 ? (
                       <>
-                        <span className="font-display text-h2 font-bold tracking-tight text-ink">
+                        <span className="font-display text-h2 tracking-tight text-ink">
                           {formatMoney(p.price_minor)}
                         </span>
                         {p.original_price_minor &&
@@ -142,19 +142,19 @@ export const PricingPlans: React.FC<PricingPlansProps> = ({
                               {formatMoney(p.original_price_minor)}
                             </span>
                           )}
-                        <span className="font-body text-body text-ink-soft">
+                        <span className="font-sans text-body text-ink-soft">
                           / month
                         </span>
                       </>
                     ) : (
-                      <span className="font-display text-h3 font-semibold italic text-ink">
+                      <span className="font-display text-h3 italic text-ink">
                         Pricing on request
                       </span>
                     )}
                   </div>
                 </header>
                 <div className="mt-6">
-                  <p className="font-body text-eyebrow font-semibold uppercase tracking-wider text-ink-soft">
+                  <p className="font-sans text-eyebrow uppercase tracking-wider text-ink-soft">
                     What&apos;s included
                   </p>
                   <ul className="mt-4 space-y-3.5">
@@ -162,7 +162,7 @@ export const PricingPlans: React.FC<PricingPlansProps> = ({
                       planFeatures.map((f) => (
                         <li
                           key={f.key}
-                          className="flex items-start text-start font-serif gap-x-3 font-body text-body"
+                          className="flex items-start text-start font-heading gap-x-3 font-sans text-body"
                         >
                           <svg
                             className={`h-5 w-5 flex-shrink-0 ${t.check}`}
@@ -182,7 +182,7 @@ export const PricingPlans: React.FC<PricingPlansProps> = ({
                         </li>
                       ))
                     ) : (
-                      <li className="font-body text-body italic text-ink-soft">
+                      <li className="font-sans text-body italic text-ink-soft">
                         No specific features listed.
                       </li>
                     )}
@@ -193,7 +193,7 @@ export const PricingPlans: React.FC<PricingPlansProps> = ({
                 <button
                   type="button"
                   onClick={() => onSelectPlan?.(p.key)}
-                  className={`w-full rounded-md px-5 py-3.5 text-center font-display text-label font-semibold tracking-wide transition-all duration-200 active:scale-[0.98] ${btnCls}`}
+                  className={`w-full rounded-md px-5 py-3.5 text-center font-display text-label tracking-wide transition-all duration-200 active:scale-[0.98] ${btnCls}`}
                 >
                   {p.price_minor > 0 ? "Select Plan" : "Contact Sales"}
                 </button>

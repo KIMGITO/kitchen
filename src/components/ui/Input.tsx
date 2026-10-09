@@ -222,7 +222,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
     <label
       htmlFor={inputId}
       className={cn(
-        'text-body block font-medium text-ink',
+        'text-body block text-ink',
         labelPlacement === 'hidden' ? 'sr-only' : '',
         labelPlacement === 'left'
           ? cn('shrink-0 pt-2.5', labelWidthClassName ?? 'w-28')

@@ -29,7 +29,7 @@ export function Hero({ tenant }: { tenant: Tenant }) {
           <h1 className="mt-3 text-display">{tenant.name}</h1>
           {tenant.description ? <p className="mt-4 max-w-xl text-body-lg text-brand-contrast/90">{tenant.description}</p> : null}
           <div className="mt-8 flex flex-wrap items-center gap-3">
-            <Link href="/menu" className="group inline-flex h-12 items-center gap-2 rounded-pill bg-accent px-7 text-body-lg font-medium text-accent-contrast shadow-card transition duration-200 hover:-translate-y-0.5 hover:shadow-raised active:scale-95">
+            <Link href="/menu" className="group inline-flex h-12 items-center gap-2 rounded-pill bg-accent px-7 text-body-lg text-accent-contrast shadow-card transition duration-200 hover:-translate-y-0.5 hover:shadow-raised active:scale-95">
               Order now <Icon name="arrow-right" size={20} className="transition-transform group-hover:translate-x-1" />
             </Link>
             {modes.length > 0 ? <p className="inline-flex items-center gap-2 rounded-pill border border-white/30 bg-white/10 px-4 py-2 text-label backdrop-blur"><Icon name="package" size={18} />{modes.join(' · ')}</p> : null}

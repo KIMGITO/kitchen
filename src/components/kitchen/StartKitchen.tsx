@@ -97,7 +97,7 @@ export function StartKitchen({
             {authError}
           </p>
         ) : null}
-        <Button type="submit" loading={busy}>
+        <Button type="submit" loading={busy} loadingText={mode === 'signup' ? 'Creating account…' : 'Logging in…'} autoLoading={false}>
           {mode === 'signup' ? 'Create account' : 'Log in'}
         </Button>
         <button
@@ -158,7 +158,7 @@ export function StartKitchen({
           {state.error}
         </p>
       ) : null}
-      <Button variant='primary' type="submit" loading={pending}>
+      <Button variant='primary' type="submit" loading={pending} loadingText="Creating kitchen…">
         Create kitchen
       </Button>
     </form>

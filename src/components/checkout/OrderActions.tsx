@@ -33,8 +33,8 @@ export function OrderActions({ orderId, status, defaultPhone, initialNotice }: {
       <p className="text-body">{status === 'PAYMENT_FAILED' ? 'The payment did not go through. You can try again.' : 'Waiting for your M-Pesa payment. Enter your PIN on the prompt, or send a new one.'}</p>
       <Input label="M-Pesa phone number" type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} />
       <div className="flex flex-wrap gap-3">
-        <Button type="button" variant="accent" loading={busy === 'pay'} onClick={pay}>{status === 'PAYMENT_FAILED' ? 'Try payment again' : 'Send a new prompt'}</Button>
-        <Button type="button" variant="outline" loading={busy === 'cancel'} onClick={cancel}>Cancel order</Button>
+        <Button type="button" variant="accent" loading={busy === 'pay'} loadingText="Sending prompt…" onClick={pay} autoLoading={false}>{status === 'PAYMENT_FAILED' ? 'Try payment again' : 'Send a new prompt'}</Button>
+        <Button type="button" variant="outline" loading={busy === 'cancel'} loadingText="Cancelling…" onClick={cancel} autoLoading={false}>Cancel order</Button>
       </div>
       {notice ? <p role={notice.tone === 'error' ? 'alert' : 'status'} className={notice.tone === 'error' ? 'text-caption text-danger' : 'text-caption text-success'}>{notice.text}</p> : null}
     </div>

@@ -21,7 +21,7 @@ export function ErrorState({ title = 'Something went wrong', description }: { ti
       <div className="flex size-10 items-center justify-center rounded-full bg-danger/15 text-danger">
         <Icon name="alert-triangle" size={18} />
       </div>
-      <h3 className="text-h3 font-semibold text-danger">{title}</h3>
+      <h3 className="text-h3 text-danger">{title}</h3>
       {description ? <p className="text-body text-ink-muted">{description}</p> : null}
     </div>
   );

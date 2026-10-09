@@ -78,6 +78,7 @@ export interface TextStyle {
 /**
  * Scale: mobile / desktop. Weights are identical across breakpoints; nothing below 400.
  *  h1 24 -> 44 (700) · h2 18 -> 30 (600) · body 14 -> 16 (400) · UI 14 -> 16 (500) · caption 12 -> 13 (400)
+ *  type primitives additionally need fixed mobile px tokens: 15px (1.875rem), 16px (1rem), 18px (1.125rem)
  */
 export const defaultText = {
   display: { font: 'display', size: '2.25rem', sizeLg: '4rem', weight: 700, lineHeight: '1.05', tracking: '-0.03em' },
@@ -90,6 +91,9 @@ export const defaultText = {
   caption: { font: 'body', size: '0.75rem', sizeLg: '0.8125rem', weight: 400, lineHeight: '1.45', tracking: '0' },
   price: { font: 'display', size: '0.875rem', sizeLg: '1rem', weight: 700, lineHeight: '1.2', tracking: '-0.005em' },
   eyebrow: { font: 'body', size: '0.75rem', sizeLg: '0.75rem', weight: 600, lineHeight: '1.3', tracking: '0.08em' },
+  '15px': { font: 'body', size: '0.9375rem', sizeLg: '1rem', weight: 600, lineHeight: '1.2', tracking: '0' },
+  '16px': { font: 'body', size: '1rem', sizeLg: '1.125rem', weight: 600, lineHeight: '1.2', tracking: '0' },
+  '18px': { font: 'display', size: '1.125rem', sizeLg: '1.5rem', weight: 700, lineHeight: '1.2', tracking: '-0.01em' },
 } as const satisfies Record<string, TextStyle>;
 export type TextRole = keyof typeof defaultText;
 
@@ -97,6 +101,10 @@ export type TextRole = keyof typeof defaultText;
 export const textAliases: Record<string, TextRole> = {
   bodyLg: 'body-lg',
 };
+
+/** Raw mobile-only px spec sizes used by the type/UI primitives. */
+export const textPixels = { '15px': '1.875rem', '16px': '1rem', '18px': '1.125rem' } as const;
+
 
 export const radius = { sm: '0.5rem', md: '0.75rem', lg: '1.125rem', xl: '1.75rem', pill: '9999px' } as const;
 export const shadows = {
@@ -116,7 +124,6 @@ export const defaultTheme = {
 };
 export type Theme = typeof defaultTheme;
 
-/** Shape stored in tenant_themes.overrides. */
 export interface ThemeOverrides {
   colors?: Partial<Record<ColorRole, string>>;
   fonts?: Partial<Record<FontRole, FontKey>>;

@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
 import './globals.css';
-import { fontVariables } from '@/theme/fonts';
+import { baseFontClassNames, fontVariables } from '@/theme/fonts';
 import { defaultTheme } from '@/theme/theme';
 import { themeToCss } from '@/theme/resolve';
 import { getTenantOptional } from '@/lib/tenant/get-tenant';
@@ -25,7 +25,9 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
   const tenant = await getTenantOptional();
   const theme = tenant?.theme ?? defaultTheme;
   const css = themeToCss(theme);
-  const fontClasses = Array.from(new Set(Object.values(theme.fonts).map((k) => fontVariables[k]))).join(' ');
+  // `baseFontClassNames` keeps --font-inter/--font-jakarta present even when a
+  // kitchen picks another display font; the per-theme variables add their pick.
+  const fontClasses = [baseFontClassNames, ...Array.from(new Set(Object.values(theme.fonts).map((k) => fontVariables[k])))].join(' ');
   return (
     <html lang="en" className={fontClasses}>
       <head>

@@ -41,7 +41,7 @@ export function PromoCarousel({ items }: { items: PromoItem[] }) {
                 </div>
               )}
               <div className="relative flex max-w-[62%] flex-col justify-center gap-2 p-5">
-                {p.discount_percent ? <span className="animate-pop inline-flex w-fit rounded-pill bg-accent px-3 py-1 text-label font-semibold text-accent-contrast">{p.discount_percent}% off</span> : null}
+                {p.discount_percent ? <span className="animate-pop inline-flex w-fit rounded-pill bg-accent px-3 py-1 text-label text-accent-contrast">{p.discount_percent}% off</span> : null}
                 <h3 className="text-h2 leading-tight">{p.title}</h3>
                 {p.subtitle ? <p className="line-clamp-2 text-caption text-brand-contrast/90">{p.subtitle}</p> : null}
                 {ends ? <p className="inline-flex items-center gap-1 text-caption text-brand-contrast/80"><Icon name="clock" size={14} />{ends}</p> : null}

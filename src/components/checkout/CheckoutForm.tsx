@@ -122,7 +122,7 @@ export function CheckoutForm(p: Props) {
           <div className="flex justify-between text-price"><dt>Total</dt><dd>{formatMoney(subtotal + fee, p.currency)}</dd></div>
         </dl>
         {error ? <p role="alert" className="mt-3 text-caption text-danger">{error}</p> : null}
-        <Button type="submit" variant="accent" size="lg" className="mt-4 w-full" loading={busy}>Pay {formatMoney(subtotal + fee, p.currency)}</Button>
+        <Button type="submit" variant="accent" size="lg" className="mt-4 w-full" loading={busy} loadingText="Placing order…">Pay {formatMoney(subtotal + fee, p.currency)}</Button>
         <p className="mt-2 text-caption text-ink-soft">Prices are confirmed by the kitchen when you place the order.</p>
       </aside>
     </form>

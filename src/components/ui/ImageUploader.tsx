@@ -65,7 +65,7 @@ export function ImageUploader({ tenantId, kind, folder, label, currentUrl, onUpl
         <div className="flex flex-col gap-1">
           <input id={inputId} type="file" accept="image/jpeg,image/png,image/webp" className="sr-only"
             onChange={(e) => { const f = e.target.files?.[0]; if (f) void handleFile(f); e.target.value = ''; }} />
-          <Button type="button" variant="outline" size="sm" loading={busy} onClick={() => document.getElementById(inputId)?.click()}>
+          <Button type="button" variant="outline" size="sm" loading={busy} loadingText="Uploading…" autoLoading={false} onClick={() => document.getElementById(inputId)?.click()}>
             {preview ? 'Replace image' : 'Upload image'}
           </Button>
           <p className="text-caption text-ink-soft">JPG, PNG or WebP. Resized and compressed before upload.</p>

@@ -29,7 +29,7 @@ export function OrderBoard({ orders, permissions, currency }: { orders: BoardOrd
 
   async function move(order: BoardOrder, to: OrderStatus) {
     if ((to === 'CANCELLED' || to === 'REJECTED') && !confirm(`${to === 'REJECTED' ? 'Decline' : 'Cancel'} order #${order.order_number}? The customer will be notified and a refund will be arranged.`)) return;
-    setBusyId(order.id); setError(null);
+    setBusyId(`${order.id}:${to}`); setError(null);
     const { error: err } = await createClient().rpc('transition_order', { p_order: order.id, p_to: to });
     if (err) { setBusyId(null); setError(friendlyError(err.message)); return; }
     // Stay busy until the server has re-rendered, so there is no dead moment after the click.
@@ -61,7 +61,7 @@ export function OrderBoard({ orders, permissions, currency }: { orders: BoardOrd
                   {o.customer_notes ? <p className="rounded-md bg-tint-alt border border-line p-2 text-caption">Customer note: {o.customer_notes}</p> : null}
                   <footer className="flex flex-wrap gap-2">
                     {staffActions(o.status, can as never).map((to) => (
-                      <Button key={to} size="sm" variant={ACTION_LABEL[to]?.variant ?? 'outline'} loading={busyId === o.id} onClick={() => move(o, to)}>{ACTION_LABEL[to]?.label ?? to}</Button>))}
+                      <Button key={to} type="button" size="sm" variant={ACTION_LABEL[to]?.variant ?? 'outline'} loading={busyId === `${o.id}:${to}`} loadingText="Working…" autoLoading={false} onClick={() => move(o, to)}>{ACTION_LABEL[to]?.label ?? to}</Button>))}
                   </footer>
                 </article>))}
             </section>);

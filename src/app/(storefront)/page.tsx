@@ -75,7 +75,7 @@ export default async function StorefrontHome() {
           <div aria-hidden className="animate-blob absolute -right-16 -top-16 size-72 rounded-full bg-accent/25 blur-3xl" />
           <div className="reveal relative flex flex-col items-start justify-between gap-5 sm:flex-row sm:items-center">
             <div><h2 className="text-h1">Hungry? Your order is a few taps away.</h2><p className="mt-2 text-body-lg text-brand-contrast/90">Pay with M-Pesa and track it live.</p></div>
-            <Link href="/menu" className="group inline-flex h-12 shrink-0 items-center gap-2 rounded-pill bg-accent px-7 text-body-lg font-medium text-accent-contrast shadow-card transition duration-200 hover:-translate-y-0.5 hover:shadow-raised active:scale-95">
+            <Link href="/menu" className="group inline-flex h-12 shrink-0 items-center gap-2 rounded-pill bg-accent px-7 text-body-lg text-accent-contrast shadow-card transition duration-200 hover:-translate-y-0.5 hover:shadow-raised active:scale-95">
               Order now <Icon name="arrow-right" size={20} className="transition-transform group-hover:translate-x-1" />
             </Link>
           </div>

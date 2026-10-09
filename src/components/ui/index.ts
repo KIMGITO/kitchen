@@ -7,6 +7,8 @@
  */
 export { Button } from './Button';
 export type { ButtonProps } from './Button';
+export { SubmitButton } from './SubmitButton';
+export { Spinner } from './Spinner';
 export { Input } from './Input';
 export type { InputProps } from './Input';
 export { Field } from './primitives/Field';
@@ -16,6 +18,7 @@ export { Badge, StatusBadge } from './primitives/Badge';
 export type { BadgeProps } from './primitives/Badge';
 export type { OrderStatus } from '@/lib/commerce/order-state';
 export { Card, CardBlock } from './primitives/Card';
+export { BodyText, Caption, DishTitle, HeroTitle, PriceLabel, SectionTitle } from './primitives/Typography';
 export { Icon } from './primitives/Icon';
 export type { IconName } from './primitives/Icon';
 export { NavLink } from './primitives/NavLink';

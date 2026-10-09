@@ -36,7 +36,7 @@ export default async function KitchenDetail({ params }: { params: Promise<{ id: 
           <div className="row-span-2"><dt>Commission</dt><dd className="text-right text-ink-muted">{m(bal?.commission_minor ?? 0)}</dd></div>
           <div className="row-span-2"><dt>Refunds</dt><dd className="text-right text-ink-muted">{m(bal?.refunds_minor ?? 0)}</dd></div>
           <div className="row-span-2"><dt>Paid out</dt><dd className="text-right text-ink-muted">{m(bal?.paid_out_minor ?? 0)}</dd></div>
-          <div className="col-span-2"><dt className="font-semibold text-ink-muted">Outstanding</dt><dd className="text-right font-semibold text-ink-muted">{m(bal?.outstanding_minor ?? 0)}</dd></div>
+          <div className="col-span-2"><dt className="font-semibold text-ink-muted">Outstanding</dt><dd className="text-right text-ink-muted">{m(bal?.outstanding_minor ?? 0)}</dd></div>
         </dl>
       </section>
 

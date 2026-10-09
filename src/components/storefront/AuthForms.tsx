@@ -48,7 +48,7 @@ export function LoginForm({ tenantId, tenantName, next }: Props) {
         <p role="status" className="text-body">You don&apos;t have a customer account with {tenantName} yet.</p>
         <Input label="Your name" value={name} onChange={(e) => setName(e.target.value)} required minLength={2} autoComplete="name" />
         {error ? <p role="alert" className="text-caption text-danger">{error}</p> : null}
-        <Button type="submit" loading={busy}>Create account with {tenantName}</Button>
+        <Button type="submit" loading={busy} loadingText="Creating account…" autoLoading={false}>Create account with {tenantName}</Button>
       </form>
     );
   }
@@ -57,7 +57,7 @@ export function LoginForm({ tenantId, tenantName, next }: Props) {
       <Input label="Email" name="email" type="email" required autoComplete="email" />
       <Input label="Password" name="password" type="password" required autoComplete="current-password" />
       {error ? <p role="alert" className="text-caption text-danger">{error}</p> : null}
-      <Button type="submit" loading={busy}>Log in</Button>
+      <Button type="submit" loading={busy} loadingText="Logging in…" autoLoading={false}>Log in</Button>
       <p className="text-caption text-ink-soft">New to {tenantName}? <Link href="/register" className="underline">Create an account</Link></p>
     </form>
   );
@@ -99,7 +99,7 @@ export function RegisterForm({ tenantId, tenantName, next }: Props) {
       <Input label="Email" name="email" type="email" required autoComplete="email" />
       <Input label="Password" name="password" type="password" required minLength={8} autoComplete="new-password" />
       {error ? <p role="alert" className="text-caption text-danger">{error}</p> : null}
-      <Button type="submit" loading={busy}>Create account with {tenantName}</Button>
+      <Button type="submit" loading={busy} loadingText="Creating account…" autoLoading={false}>Create account with {tenantName}</Button>
       <p className="text-caption text-ink-soft">Already have an account? <Link href="/login" className="underline">Log in</Link></p>
     </form>
   );

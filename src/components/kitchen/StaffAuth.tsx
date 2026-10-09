@@ -24,7 +24,7 @@ export function StaffLoginForm({ next }: { next?: string }) {
       <Input label="Email" name="email" type="email" required autoComplete="email" />
       <Input label="Password" name="password" type="password" required autoComplete="current-password" />
       {error ? <p role="alert" className="text-caption text-danger">{error}</p> : null}
-      <Button type="submit" loading={busy}>Log in</Button>
+      <Button type="submit" loading={busy} loadingText="Logging in…" autoLoading={false}>Log in</Button>
     </form>
   );
 }
@@ -61,7 +61,7 @@ export function InviteAccept({ token, tenantName, signedInEmail }: { token: stri
     return (<div className="flex flex-col gap-4">
       <p>You are signed in as <strong>{signedInEmail}</strong>.</p>
       {error ? <p role="alert" className="text-caption text-danger">{error}</p> : null}
-      <Button loading={busy} onClick={() => { setBusy(true); void accept(); }}>Join {tenantName}</Button></div>);
+      <Button loading={busy} loadingText="Joining…" autoLoading={false} onClick={() => { setBusy(true); void accept(); }}>Join {tenantName}</Button></div>);
   }
   if (notice) return <p role="status">{notice}</p>;
   return (
@@ -70,7 +70,7 @@ export function InviteAccept({ token, tenantName, signedInEmail }: { token: stri
       <Input label="Email (use the address you were invited with)" name="email" type="email" required />
       <Input label="Password" name="password" type="password" required minLength={8} autoComplete={mode === 'signup' ? 'new-password' : 'current-password'} />
       {error ? <p role="alert" className="text-caption text-danger">{error}</p> : null}
-      <Button type="submit" loading={busy}>{mode === 'signup' ? 'Create account and join' : 'Log in and join'}</Button>
+      <Button type="submit" loading={busy} loadingText={mode === 'signup' ? 'Creating account…' : 'Logging in…'} autoLoading={false}>{mode === 'signup' ? 'Create account and join' : 'Log in and join'}</Button>
       <button type="button" className="text-left text-caption underline" onClick={() => setMode(mode === 'signup' ? 'login' : 'signup')}>
         {mode === 'signup' ? 'I already have an account' : 'I need to create an account'}
       </button>

@@ -45,7 +45,7 @@ export default async function PlatformHome() {
           </p>
           <Link
             href="/start"
-            className="mt-8 inline-flex h-12 items-center rounded-pill bg-accent px-8 text-body-lg font-semibold text-accent-contrast"
+            className="mt-8 inline-flex h-12 items-center rounded-pill bg-accent px-8 text-body-lg text-accent-contrast"
           >
             Open your kitchen
           </Link>

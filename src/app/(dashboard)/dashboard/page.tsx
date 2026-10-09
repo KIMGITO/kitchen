@@ -4,6 +4,7 @@ import { getTenant } from '@/lib/tenant/get-tenant';
 import { createClient } from '@/lib/supabase/server';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { formatMoney } from '@/lib/commerce/money';
+import { FONT_KEYS } from '@/theme/theme';
 
 export default async function DashboardHome() {
   const { perms } = await requirePermission('orders.view');
@@ -16,7 +17,7 @@ export default async function DashboardHome() {
 
   return (
     <div className="flex flex-col gap-6">
-      <h1 className="text-h1">Overview</h1>
+      <h1 className="text-h1" >Overview</h1>
       {received + preparing + ready === 0
         ? <EmptyState title="No live orders" description="New paid orders appear here as soon as they arrive." />
         : <p className="text-body-lg">{received} new, {preparing} preparing, {ready} ready. <Link href="/dashboard/orders" className="underline">Open the order board</Link></p>}
