@@ -1,11 +1,14 @@
+'use client';
 import {
   forwardRef,
   useId,
+  useState,
   type InputHTMLAttributes,
   type ReactNode,
 } from 'react';
 import { cn } from './cn';
 import { Field } from './primitives/Field';
+import { Icon } from './primitives/Icon';
 
 export type InputVariant =
   | 'border'
@@ -20,7 +23,7 @@ export type InputWidth = 'full' | 'auto' | 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 export type LabelPlacement = 'top' | 'left' | 'hidden';
 export type IconPosition = 'left' | 'right';
 
-export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
+export interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'size'> {
   label: string;
   error?: string;
   hint?: string;
@@ -147,6 +150,8 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
       : undefined;
   const resolved = resolveVariant(variant);
   const hasError = Boolean(error);
+  const [showPassword, setShowPassword] = useState(false);
+  const isPassword = rest.type === 'password';
 
   const inputClasses = cn(
     'field-input w-full text-ink-muted placeholder:text-ink-soft',
@@ -159,6 +164,38 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
   );
 
   const renderControl = () => {
+    if (isPassword) {
+      // Every password field gets a show/hide toggle.
+      const { type: _type, ...inputRest } = rest;
+      void _type;
+      return (
+        <span className="relative block w-full">
+          <input
+            ref={ref}
+            id={inputId}
+            required={required}
+            disabled={disabled}
+            aria-invalid={error ? true : undefined}
+            aria-describedby={describedBy}
+            className={cn(inputClasses, 'pr-11')}
+            autoCapitalize="none"
+            spellCheck={false}
+            {...inputRest}
+            type={showPassword ? 'text' : 'password'}
+          />
+          <button
+            type="button"
+            onClick={() => setShowPassword((v) => !v)}
+            aria-label={showPassword ? 'Hide password' : 'Show password'}
+            aria-pressed={showPassword}
+            disabled={disabled}
+            className="absolute right-1 top-1/2 grid size-9 -translate-y-1/2 place-items-center rounded-full text-ink-soft transition-colors hover:bg-accent-soft hover:text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand"
+          >
+            <Icon name={showPassword ? 'eye-slash' : 'eye'} size={18} />
+          </button>
+        </span>
+      );
+    }
     if (!icon) {
       return (
         <input

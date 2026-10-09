@@ -3,6 +3,7 @@ import { useActionState, useState, type FormEvent } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
+import { checkPassword, PASSWORD_HINT } from '@/lib/auth/password';
 import { claimPlatformOwnership } from '@/lib/actions/platform';
 
 /**
@@ -21,7 +22,8 @@ export function PlatformSetup({ signedInEmail, adminLoginUrl }: { signedInEmail:
   async function onAuth(e: FormEvent<HTMLFormElement>) {
     e.preventDefault(); setAuthError(null); setBusy(true);
     const f = new FormData(e.currentTarget); const supabase = createClient();
-    const em = String(f.get('email')); const pw = String(f.get('password'));
+    const em = String(f.get('email')).trim().toLowerCase(); const pw = String(f.get('password'));
+    if (mode === 'signup') { const bad = checkPassword(pw, String(f.get('confirm') ?? ''), em); if (bad) { setAuthError(bad); setBusy(false); return; } }
     if (mode === 'signup') {
       const { data, error } = await supabase.auth.signUp({ email: em, password: pw, options: { data: { full_name: String(f.get('name') ?? '') } } });
       if (error) setAuthError(error.message);
@@ -51,7 +53,8 @@ export function PlatformSetup({ signedInEmail, adminLoginUrl }: { signedInEmail:
       <form onSubmit={onAuth} className="flex flex-col gap-4">
         {mode === 'signup' ? <Input label="Your name" name="name" required minLength={2} /> : null}
         <Input label="Email" name="email" type="email" required />
-        <Input label="Password" name="password" type="password" required minLength={8} />
+        <Input label="Password" name="password" type="password" required minLength={8} autoComplete={mode === 'signup' ? 'new-password' : 'current-password'} hint={mode === 'signup' ? PASSWORD_HINT : undefined} />
+        {mode === 'signup' ? <Input label="Confirm password" name="confirm" type="password" required minLength={8} autoComplete="new-password" /> : null}
         {authError ? <p role="alert" className="text-caption text-danger">{authError}</p> : null}
         <Button type="submit" loading={busy} loadingText={mode === 'signup' ? 'Creating account…' : 'Logging in…'} autoLoading={false}>{mode === 'signup' ? 'Create account' : 'Log in'}</Button>
         <button type="button" className="text-left text-caption underline" onClick={() => setMode(mode === 'signup' ? 'login' : 'signup')}>{mode === 'signup' ? 'I already have an account' : 'I need to create an account'}</button>

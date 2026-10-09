@@ -7,6 +7,7 @@ import { StatusBadge } from '@/components/ui/StatusBadge';
 import { RealtimeRefresh } from '@/components/ui/RealtimeRefresh';
 import { OrderTimeline } from '@/components/storefront/OrderTimeline';
 import { OrderActions } from '@/components/checkout/OrderActions';
+import { PaymentLive, type LivePayment } from '@/components/checkout/PaymentLive';
 import { formatMoney } from '@/lib/commerce/money';
 import type { OrderStatus } from '@/lib/commerce/order-state';
 
@@ -25,7 +26,7 @@ export default async function OrderPage({ params, searchParams }: { params: Prom
     .eq('id', id).eq('tenant_id', tenant.id).maybeSingle();
   if (!order) notFound();
   const status = order.status as OrderStatus;
-  const { data: lastPay } = await supabase.from('payments').select('status, result_desc').eq('order_id', id).order('created_at', { ascending: false }).limit(1).maybeSingle();
+  const { data: lastPay } = await supabase.from('payments').select('status, result_code, result_desc, provider_receipt, created_at').eq('order_id', id).order('created_at', { ascending: false }).limit(1).maybeSingle();
 
   return (
     <Section>
@@ -34,7 +35,7 @@ export default async function OrderPage({ params, searchParams }: { params: Prom
         <div className="flex flex-wrap items-center justify-between gap-3">
           <h1 className="text-h1">Order #{order.order_number}</h1><StatusBadge status={status} />
         </div>
-        {status === 'PAYMENT_FAILED' && lastPay?.result_desc ? <p className="text-body text-ink-soft">M-Pesa said: {lastPay.result_desc}</p> : null}
+        <PaymentLive orderId={id} orderStatus={status} initial={(lastPay as LivePayment | null) ?? null} />
         <OrderActions orderId={id} status={status} defaultPhone={order.contact_phone}
           initialNotice={pay === 'retry' ? 'Your order is saved, but we could not send the M-Pesa prompt. Send it again below.' : undefined} />
         <OrderTimeline status={status} />

@@ -1,4 +1,5 @@
 'use server';
+import { normalizeKePhone, PHONE_ERROR } from '@/lib/phone';
 import { revalidatePath } from 'next/cache';
 import { headers } from 'next/headers';
 import { z } from 'zod';
@@ -59,7 +60,7 @@ export async function saveGeneral(_: ActionResult | null, fd: FormData): Promise
   const tenant = await getTenant();
   const { error } = await (await createClient()).from('tenants').update({
     name: p.data.name, description: p.data.description || null, contact_email: p.data.contact_email || null,
-    contact_phone: p.data.contact_phone || null, address_text: p.data.address_text || null }).eq('id', tenant.id);
+    contact_phone: p.data.contact_phone ? (normalizeKePhone(p.data.contact_phone) ?? p.data.contact_phone) : null, address_text: p.data.address_text || null }).eq('id', tenant.id);
   if (error) return fail(friendlyError(error.message));
   revalidatePath('/', 'layout'); return ok('Saved.');
 }
@@ -119,7 +120,9 @@ export async function saveTheme(_: ActionResult | null, fd: FormData): Promise<A
 // ---------- notifications + payout account ----------
 export async function saveNotificationSettings(_: ActionResult | null, fd: FormData): Promise<ActionResult> {
   const tenant = await getTenant();
-  const phone = String(fd.get('kitchen_alert_phone') ?? '').trim();
+  const rawPhone = String(fd.get('kitchen_alert_phone') ?? '').trim();
+  const phone = rawPhone ? normalizeKePhone(rawPhone) : null;
+  if (rawPhone && !phone) return fail(PHONE_ERROR);
   const { error } = await (await createClient()).from('tenant_notification_settings').upsert({
     tenant_id: tenant.id, customer_email: fd.get('customer_email') === 'on', customer_sms: fd.get('customer_sms') === 'on',
     kitchen_email: fd.get('kitchen_email') === 'on', kitchen_sms: fd.get('kitchen_sms') === 'on', kitchen_alert_phone: phone || null,

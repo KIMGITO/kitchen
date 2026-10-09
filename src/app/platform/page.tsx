@@ -64,9 +64,9 @@ export default async function PlatformHome() {
           <p className="mt-4 text-ink-soft">Plans will be listed here soon.</p>
         ) : (
          <PricingPlans  
-         plans={plans}
-         features={features}
-         pf={pf}
+         plans={plans ?? undefined}
+         features={features ?? undefined}
+         pf={pf ?? undefined}
          />
         )}
       </Section>

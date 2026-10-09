@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/Input';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { formatMoney } from '@/lib/commerce/money';
 import { friendlyError } from '@/lib/errors';
+import { PhoneInput } from '@/components/ui/PhoneInput';
 import { requestMpesaPayment } from '@/lib/payments-client';
 import { cartSubtotal, selectLines, useCartStore } from '@/stores/cart';
 import Link from 'next/link';
@@ -106,7 +107,7 @@ export function CheckoutForm(p: Props) {
 
         <fieldset className="flex flex-col gap-3">
           <legend className="text-h3">Pay with M-Pesa</legend>
-          <Input label="M-Pesa phone number" name="phone" type="tel" required defaultValue={p.customer.phone ?? ''} autoComplete="tel"
+          <PhoneInput label="M-Pesa phone number" name="phone" required defaultValue={p.customer.phone}
             hint="Safaricom number, for example 0712 345 678. You will get a prompt to enter your PIN." />
           <Input label="Note for the kitchen (optional)" name="notes" maxLength={200} />
         </fieldset>

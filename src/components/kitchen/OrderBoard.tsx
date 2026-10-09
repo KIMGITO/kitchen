@@ -49,7 +49,7 @@ export function OrderBoard({ orders, permissions, currency }: { orders: BoardOrd
               {list.map((o) => (
                 <article key={o.id} className="flex flex-col gap-3 rounded-lg bg-surface p-4 shadow-card">
                   <header className="flex items-start justify-between gap-2">
-                    <div><p className="text-h3">#{o.order_number}</p><p className="text-caption text-ink-soft">{o.contact_name} • {o.contact_phone}</p></div>
+                    <div><p className="text-h3">#{o.order_number}</p><p className="text-caption text-ink-soft">{o.contact_name} • <a href={`tel:${o.contact_phone}`} className="underline">{o.contact_phone}</a></p></div>
                     <div className="text-right"><p className="text-price">{formatMoney(o.total_minor, currency)}</p>
                       <p className="text-caption capitalize text-ink-soft">{o.fulfilment} • {new Date(o.created_at).toLocaleTimeString('en-KE', { hour: '2-digit', minute: '2-digit' })}</p></div>
                   </header>

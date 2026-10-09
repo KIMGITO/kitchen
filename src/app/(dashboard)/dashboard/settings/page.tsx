@@ -8,6 +8,7 @@ import { BrandingUploaders } from '@/components/kitchen/BrandingUploaders';
 import { minorToShillings } from '@/lib/money-input';
 import { createClient } from '@/lib/supabase/server';
 import { requestPayoutAccount, saveGeneral, saveHours, saveNotificationSettings, saveOrdering, saveSeo, saveTheme } from '@/lib/actions/kitchen';
+import { PhoneInput } from '@/components/ui/PhoneInput';
 import { OVERRIDABLE_COLORS, FONT_KEYS } from '@/theme/theme';
 
 const DAYS = [['mon', 'Monday'], ['tue', 'Tuesday'], ['wed', 'Wednesday'], ['thu', 'Thursday'], ['fri', 'Friday'], ['sat', 'Saturday'], ['sun', 'Sunday']] as const;
@@ -43,7 +44,7 @@ export default async function Settings() {
           </label>
           <div className="grid gap-4 sm:grid-cols-2">
             <Input label="Contact email" name="contact_email" type="email" defaultValue={t.contact_email ?? ''} />
-            <Input label="Contact phone" name="contact_phone" defaultValue={t.contact_phone ?? ''} />
+            <PhoneInput label="Contact phone" name="contact_phone" defaultValue={t.contact_phone} />
           </div>
           <Input label="Address" name="address_text" defaultValue={t.address_text ?? ''} />
         </ActionForm>
@@ -89,13 +90,13 @@ export default async function Settings() {
           <fieldset className="flex flex-col gap-3">
             <legend className="text-label text-ink-muted">Customers receive</legend>
             <label className="flex items-center gap-2"><input type="checkbox" name="customer_email" defaultChecked={ns?.customer_email ?? true} className="size-4 accent-brand" />Order updates by email</label>
-            <label className="flex items-center gap-2"><input type="checkbox" name="customer_sms" defaultChecked={ns?.customer_sms ?? false} disabled={!canSms} className="size-4 accent-brand" />Order updates by SMS{canSms ? '' : ' (Advanced plan)'}</label>
+            <label className="flex items-center gap-2"><input type="checkbox" name="customer_sms" defaultChecked={ns?.customer_sms ?? true} className="size-4 accent-brand" />SMS to customers: receipts and payment alerts{canSms ? ', plus ready / declined / cancelled updates' : ' (ready / declined / cancelled updates need the Advanced plan)'}</label>
           </fieldset>
           <fieldset className="flex flex-col gap-3">
             <legend className="text-label text-ink-muted">Your team receives</legend>
             <label className="flex items-center gap-2"><input type="checkbox" name="kitchen_email" defaultChecked={ns?.kitchen_email ?? true} className="size-4 accent-brand" />New-order emails to {t.contact_email ?? 'your contact email (set one above)'}</label>
             <label className="flex items-center gap-2"><input type="checkbox" name="kitchen_sms" defaultChecked={ns?.kitchen_sms ?? false} disabled={!canSms} className="size-4 accent-brand" />New-order SMS{canSms ? '' : ' (Advanced plan)'}</label>
-            <Input label="Phone for SMS alerts" name="kitchen_alert_phone" type="tel" defaultValue={ns?.kitchen_alert_phone ?? ''} />
+            <PhoneInput label="Phone for SMS alerts" name="kitchen_alert_phone" defaultValue={ns?.kitchen_alert_phone} />
           </fieldset>
         </ActionForm>
       </section>

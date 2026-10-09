@@ -28,7 +28,7 @@ const MESSAGES: Record<string, string> = {
   no_payout_account: 'This kitchen has no approved payout number yet.',
   refund_in_progress: 'A refund for this payment is already in progress or finished.',
   receipt_missing: 'This payment has no M-Pesa receipt yet. Enter the receipt first, or refund manually.',
-  invalid_phone: 'Enter a valid Safaricom number, for example 0712 345 678.',
+  invalid_phone: 'Enter a valid Kenyan mobile number, e.g. +254 712 345 678.',
   amount_not_whole_shillings: 'Amounts must be whole shillings.',
   invalid_receipt: 'Enter the M-Pesa receipt code (at least 8 characters).',
   nothing_to_review: 'That request was already reviewed.',

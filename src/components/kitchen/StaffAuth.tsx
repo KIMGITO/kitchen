@@ -5,6 +5,7 @@ import { createClient } from '@/lib/supabase/client';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { friendlyError } from '@/lib/errors';
+import { checkPassword, PASSWORD_HINT } from '@/lib/auth/password';
 
 const safeNext = (n?: string) => (n && n.startsWith('/') && !n.startsWith('//') ? n : '/dashboard');
 
@@ -45,8 +46,10 @@ export function InviteAccept({ token, tenantName, signedInEmail }: { token: stri
   async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault(); setError(null); setBusy(true);
     const f = new FormData(e.currentTarget); const supabase = createClient();
-    const email = String(f.get('email')); const password = String(f.get('password'));
+    const email = String(f.get('email')).trim().toLowerCase(); const password = String(f.get('password'));
     if (mode === 'signup') {
+      const bad = checkPassword(password, String(f.get('confirm') ?? ''), email);
+      if (bad) { setBusy(false); setError(bad); return; }
       const { data, error: sErr } = await supabase.auth.signUp({ email, password, options: { data: { full_name: String(f.get('name') ?? '') } } });
       if (sErr) { setBusy(false); setError(sErr.message); return; }
       if (!data.session) { setBusy(false); setNotice('Confirm your email address, then open this invitation link again to join.'); return; }
@@ -68,7 +71,8 @@ export function InviteAccept({ token, tenantName, signedInEmail }: { token: stri
     <form onSubmit={onSubmit} className="flex flex-col gap-4">
       {mode === 'signup' ? <Input label="Full name" name="name" required minLength={2} /> : null}
       <Input label="Email (use the address you were invited with)" name="email" type="email" required />
-      <Input label="Password" name="password" type="password" required minLength={8} autoComplete={mode === 'signup' ? 'new-password' : 'current-password'} />
+      <Input label="Password" name="password" type="password" required minLength={8} autoComplete={mode === 'signup' ? 'new-password' : 'current-password'} hint={mode === 'signup' ? PASSWORD_HINT : undefined} />
+      {mode === 'signup' ? <Input label="Confirm password" name="confirm" type="password" required minLength={8} autoComplete="new-password" /> : null}
       {error ? <p role="alert" className="text-caption text-danger">{error}</p> : null}
       <Button type="submit" loading={busy} loadingText={mode === 'signup' ? 'Creating account…' : 'Logging in…'} autoLoading={false}>{mode === 'signup' ? 'Create account and join' : 'Log in and join'}</Button>
       <button type="button" className="text-left text-caption underline" onClick={() => setMode(mode === 'signup' ? 'login' : 'signup')}>

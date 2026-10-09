@@ -16,7 +16,7 @@ import { cn } from '@/components/ui/cn';
  * stays responsive (mobile -> desktop) — see docs/typography-and-themes.md.
  */
 
-type As = 'h1' | 'h2' | 'h3' | 'p' | 'span' | 'div';
+type As = 'h1' | 'h2' | 'h3' | 'p' | 'span' | 'div' | 'dt' | 'dd' | 'li' | 'label';
 
 interface TypeProps {
   as?: As;

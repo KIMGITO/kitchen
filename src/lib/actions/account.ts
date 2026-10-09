@@ -6,6 +6,7 @@ import { getTenant } from '@/lib/tenant/get-tenant';
 import { getKitchenCustomer } from '@/lib/auth/session';
 import { fail, ok, type ActionResult } from './result';
 import { friendlyError } from '@/lib/errors';
+import { normalizeKePhone, PHONE_ERROR } from '@/lib/phone';
 
 const profileSchema = z.object({
   full_name: z.string().trim().min(2).max(120),
@@ -15,11 +16,13 @@ const profileSchema = z.object({
 export async function updateProfile(_: ActionResult | null, fd: FormData): Promise<ActionResult> {
   const parsed = profileSchema.safeParse({ full_name: fd.get('full_name'), phone: fd.get('phone') ?? undefined });
   if (!parsed.success) return fail('Enter your name (at least 2 letters).');
+  const phone = normalizeKePhone(parsed.data.phone);
+  if (!phone) return fail(PHONE_ERROR);
   const customer = await getKitchenCustomer();
   if (!customer) return fail(friendlyError('no_customer_account'));
   const supabase = await createClient();
   const { error } = await supabase.from('kitchen_customers')
-    .update({ full_name: parsed.data.full_name, phone: parsed.data.phone || null, marketing_opt_in: fd.get('marketing') === 'on' })
+    .update({ full_name: parsed.data.full_name, phone, marketing_opt_in: fd.get('marketing') === 'on' })
     .eq('id', customer.id);
   if (error) return fail(friendlyError(error.message));
   revalidatePath('/account');

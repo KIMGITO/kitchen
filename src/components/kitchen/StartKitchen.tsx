@@ -3,6 +3,7 @@ import { useActionState, useState, type FormEvent } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
+import { checkPassword, PASSWORD_HINT } from '@/lib/auth/password';
 import { registerKitchen } from '@/lib/actions/platform';
 import { LinkIcon } from '@phosphor-icons/react';
 
@@ -26,8 +27,12 @@ export function StartKitchen({
     setBusy(true);
     const f = new FormData(e.currentTarget);
     const supabase = createClient();
-    const em = String(f.get('email'));
+    const em = String(f.get('email')).trim().toLowerCase();
     const pw = String(f.get('password'));
+    if (mode === 'signup') {
+      const bad = checkPassword(pw, String(f.get('confirm') ?? ''), em);
+      if (bad) { setAuthError(bad); setBusy(false); return; }
+    }
     if (mode === 'signup') {
       const { data, error } = await supabase.auth.signUp({
         email: em,
@@ -86,12 +91,16 @@ export function StartKitchen({
         <Input label="Email" name="email" type="email" required />
         <Input
           label="Password"
-          k
           name="password"
           type="password"
           required
           minLength={8}
+          autoComplete="new-password"
+          hint={PASSWORD_HINT}
         />
+        {mode === 'signup' ? (
+          <Input label="Confirm password" name="confirm" type="password" required minLength={8} autoComplete="new-password" />
+        ) : null}
         {authError ? (
           <p role="alert" className="text-caption text-danger">
             {authError}
@@ -143,7 +152,6 @@ export function StartKitchen({
             minLength={3}
             maxLength={40}
             className="h-11 flex-1 rounded-md border border-line px-3"
-            helperText="Lowercase letters, numbers and hyphens."
           />
           <span className="text-body text-ink-soft self-end">
             .{rootDomain}

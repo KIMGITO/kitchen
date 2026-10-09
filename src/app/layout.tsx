@@ -5,6 +5,7 @@ import { baseFontClassNames, fontVariables } from '@/theme/fonts';
 import { defaultTheme } from '@/theme/theme';
 import { themeToCss } from '@/theme/resolve';
 import { getTenantOptional } from '@/lib/tenant/get-tenant';
+import { Toaster } from '@/components/ui/Toaster';
 
 export async function generateMetadata(): Promise<Metadata> {
   const tenant = await getTenantOptional();
@@ -34,7 +35,10 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
         {/* Server-generated from validated theme tokens only; contains no user-supplied strings. */}
         <style dangerouslySetInnerHTML={{ __html: css }} />
       </head>
-      <body suppressHydrationWarning>{children}</body>
+      <body suppressHydrationWarning>
+        {children}
+        <Toaster />
+      </body>
     </html>
   );
 }

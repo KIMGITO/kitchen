@@ -34,7 +34,7 @@ function resolveTheme(plan: Plan, index: number): PlanTheme {
     return plan.theme;
   if (plan.isPopular) return "accent";
   const cycle: PlanTheme[] = ["brand", "promo", "accent"];
-  return cycle[index % cycle.length];
+  return cycle[index % cycle.length] ?? "brand";
 }
 const THEME: Record<
   PlanTheme,

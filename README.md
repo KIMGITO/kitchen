@@ -280,7 +280,7 @@ declined, cancelled, payment failed; kitchen: new order, payment received, cance
 | Channel | Customers | Kitchen team | Plan |
 |---|---|---|---|
 | Email (Resend) | order updates (on by default) | new-order email to the kitchen contact email (on by default) | all plans |
-| SMS (Africa's Talking) | opt-in per kitchen | opt-in, to an alert phone | needs the `advanced_notifications` feature; capped per kitchen per day (`platform_settings.sms_daily_cap_per_kitchen`, default 200) |
+| SMS (Africa's Talking) | on by default: receipts, payment failures, refunds on every plan; ready/declined/cancelled need `advanced_notifications` | opt-in, to an alert phone (needs `advanced_notifications`) | capped per kitchen per day (`platform_settings.sms_daily_cap_per_kitchen`, default 200) |
 
 `notification-dispatch` (scheduled every minute) claims queued rows (`FOR UPDATE SKIP LOCKED`, with a lease so a crashed run recovers), sends them, and retries failures up to 5 times with backoff.
 Enqueueing is wrapped so a delivery problem can never block an order or payment. Failed deliveries are counted on the admin Finance page.
@@ -342,6 +342,36 @@ Put the output in `MPESA_SECURITY_CREDENTIAL`. (The sandbox portal also has a cr
 business portal with B2C and reversal permissions; the sandbox initiator is `testapi` with the portal's test password.
 
 **Email / SMS.** `RESEND_API_KEY` + `EMAIL_FROM` (a verified sending domain). SMS: `AT_API_KEY`, `AT_USERNAME` (`sandbox` in the sandbox, with `AT_ENV=sandbox`).
+
+**Messaging (Africa's Talking SMS + Resend email).** Set these as *Edge Function secrets* (never in the repo):
+
+```bash
+supabase secrets set AT_API_KEY=... AT_USERNAME=... AT_SENDER_ID=... RESEND_API_KEY=... EMAIL_FROM="Name <no-reply@yourdomain.com>"
+# sandbox testing: AT_USERNAME=sandbox and AT_ENV=sandbox (messages only reach the Africa's Talking simulator)
+```
+
+What customers receive (email always; SMS only where marked):
+
+| Moment | Email | SMS |
+|---|---|---|
+| Account created | Welcome | - |
+| Payment confirmed | Itemised receipt with M-Pesa reference | Yes (all plans) |
+| Payment failed | What happened + link to retry | Yes (all plans) |
+| Accepted / preparing / completed | Yes | - |
+| Ready (pickup or delivery) | Yes | Advanced plan |
+| Declined / cancelled | Yes | Advanced plan |
+| Refund sent | Yes | Yes (all plans) |
+
+SMS goes to the order's M-Pesa/contact number. Daily SMS cap per kitchen: `platform_settings.sms_daily_cap_per_kitchen` (default 200).
+For near-instant delivery, add a **Database Webhook** on `notification_deliveries` (INSERT) that calls the `notification-dispatch` function; keep the 1-minute cron as the retry safety net.
+
+**Google sign-in (customers only).**
+1. Google Cloud Console -> Credentials -> OAuth client (Web). Authorised redirect URI: `https://<project-ref>.supabase.co/auth/v1/callback`.
+2. Supabase Dashboard -> Authentication -> Providers -> Google: paste the client ID and secret.
+3. Authentication -> URL Configuration: add `https://*.yourdomain.com/auth/callback` (and each custom tenant domain, plus `http://localhost:3000/auth/callback` for dev).
+4. Staff and platform admins are blocked: `/auth/callback` signs out any Google sign-in whose account is a kitchen team member or platform staff (`is_staff_account()`), and the staff, invite and platform-setup pages never show the Google button.
+5. Recommended in Supabase Auth settings: minimum password length 8, require letters and digits, and keep "confirm email" on.
+
 
 How the functions protect money:
 

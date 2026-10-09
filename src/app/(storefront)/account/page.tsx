@@ -7,6 +7,7 @@ import { Section } from '@/components/ui/Section';
 import { Input } from '@/components/ui/Input';
 import { ActionForm } from '@/components/ui/ActionForm';
 import { Button } from '@/components/ui/Button';
+import { PhoneInput } from '@/components/ui/PhoneInput';
 import { LogoutButton } from '@/components/account/LogoutButton';
 import { addAddress, deleteAddress, updateProfile } from '@/lib/actions/account';
 
@@ -38,7 +39,7 @@ export default async function AccountPage() {
           <h2 id="profile-h" className="text-h2">Details</h2>
           <ActionForm action={updateProfile} submitLabel="Save details">
             <Input label="Full name" name="full_name" defaultValue={customer.full_name} required minLength={2} />
-            <Input label="Phone" name="phone" type="tel" defaultValue={customer.phone ?? ''} />
+            <PhoneInput label="Mobile number" name="phone" required defaultValue={customer.phone} hint="Receipts and order updates are sent to this number." />
             <label className="flex items-center gap-2 text-body"><input type="checkbox" name="marketing" defaultChecked={prefs?.marketing_opt_in ?? false} className="size-4 accent-brand" />Send me offers from {tenant.name}</label>
           </ActionForm>
           <p className="text-caption text-ink-soft">This account belongs to {tenant.name} only. Other kitchens keep their own separate accounts.</p>
