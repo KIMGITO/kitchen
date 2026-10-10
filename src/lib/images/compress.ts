@@ -31,33 +31,55 @@ function toBlob(canvas: HTMLCanvasElement, quality: number): Promise<Blob> {
     canvas.toBlob((b) => (b ? resolve(b) : reject(new ImageError('Could not process this image.'))), 'image/webp', quality));
 }
 
-export async function prepareImage(file: File, kind: ImageKind): Promise<PreparedImage> {
+/** Hard ceiling for what is stored: 2 MB (avatars 1 MB). Matches the storage bucket limits. */
+export const hardMaxBytes = (kind: ImageKind) => (kind === 'avatar' ? 1 : 2) * 1024 * 1024;
+export const MAX_INPUT_MB = 15;
+
+/** Validates a picked file before opening the editor. */
+export function checkInputFile(file: File): void {
   if (!ACCEPTED.includes(file.type)) throw new ImageError('Use a JPG, PNG or WebP image.');
-  if (file.size > MAX_INPUT_BYTES) throw new ImageError('This image is larger than 15 MB. Choose a smaller one.');
+  if (file.size > MAX_INPUT_BYTES) throw new ImageError(`This image is larger than ${MAX_INPUT_MB} MB. Choose a smaller one.`);
+}
+
+export async function loadBitmap(file: File): Promise<ImageBitmap> {
+  checkInputFile(file);
+  try { return await createImageBitmap(file, { imageOrientation: 'from-image' }); }
+  catch { throw new ImageError('This image could not be opened. Try another file.'); }
+}
+
+/** Canvas -> WebP under the kind's size budget. Quality steps down first, then dimensions, until it fits the hard cap. */
+export async function encodeCanvas(source: HTMLCanvasElement, kind: ImageKind): Promise<PreparedImage> {
   const preset = IMAGE_PRESETS[kind];
-
-  const bitmap = await createImageBitmap(file, { imageOrientation: 'from-image' });
-  const scale = Math.min(1, preset.maxEdge / Math.max(bitmap.width, bitmap.height));
-  const width = Math.round(bitmap.width * scale);
-  const height = Math.round(bitmap.height * scale);
-
-  const canvas = document.createElement('canvas');
-  canvas.width = width; canvas.height = height;
-  const ctx = canvas.getContext('2d');
-  if (!ctx) throw new ImageError('Your browser cannot process images.');
-  ctx.drawImage(bitmap, 0, 0, width, height);
-  bitmap.close();
-
-  // Step quality down until the file fits the preset budget.
+  const cap = hardMaxBytes(kind);
+  let canvas = source;
   let quality = preset.quality;
   let blob = await toBlob(canvas, quality);
-  while (blob.size > preset.maxBytes && quality > 0.5) {
-    quality -= 0.08;
+  while (blob.size > preset.maxBytes && quality > 0.6) { quality -= 0.08; blob = await toBlob(canvas, quality); }
+  for (let i = 0; blob.size > cap && i < 10; i++) {
+    if (quality > 0.5) quality -= 0.08;
+    else {
+      const smaller = document.createElement('canvas');
+      smaller.width = Math.round(canvas.width * 0.85); smaller.height = Math.round(canvas.height * 0.85);
+      smaller.getContext('2d')?.drawImage(canvas, 0, 0, smaller.width, smaller.height);
+      canvas = smaller;
+    }
     blob = await toBlob(canvas, quality);
   }
-  if (blob.size > preset.maxBytes * 2) throw new ImageError('This image is too detailed to compress enough. Try a simpler photo.');
+  if (blob.size > cap) throw new ImageError(`Could not shrink this image under ${cap / 1024 / 1024} MB. Try a simpler photo.`);
+  return { blob, hash: await sha256Hex(blob), width: canvas.width, height: canvas.height, bytes: blob.size, mime: 'image/webp' };
+}
 
-  return { blob, hash: await sha256Hex(blob), width, height, bytes: blob.size, mime: 'image/webp' };
+/** Straight resize without cropping (kept for callers that do not need the editor). */
+export async function prepareImage(file: File, kind: ImageKind): Promise<PreparedImage> {
+  const bitmap = await loadBitmap(file);
+  const scale = Math.min(1, IMAGE_PRESETS[kind].maxEdge / Math.max(bitmap.width, bitmap.height));
+  const canvas = document.createElement('canvas');
+  canvas.width = Math.round(bitmap.width * scale); canvas.height = Math.round(bitmap.height * scale);
+  const ctx = canvas.getContext('2d');
+  if (!ctx) throw new ImageError('Your browser cannot process images.');
+  ctx.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+  bitmap.close();
+  return encodeCanvas(canvas, kind);
 }
 
 export const BUCKET_FOR_KIND: Record<ImageKind, string> = {

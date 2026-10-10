@@ -105,7 +105,7 @@ export default async function Settings() {
         <h2 id="pa-h" className="text-h2 text-ink-muted">Payout account</h2>
         <p className="text-body text-ink-soft">Your earnings are paid to one M-Pesa number. New or changed numbers are reviewed by the platform team before any money is sent to them.</p>
         {approved ? <p className="text-body text-ink-muted">Approved number: <strong>****{(approved as { msisdn: string }).msisdn.slice(-4)}</strong> ({(approved as { account_name: string }).account_name})</p> : <p className="text-body text-ink-soft">No approved number yet.</p>}
-        {pending ? <p role="status" className="rounded-md bg-tint-alt border border-line px-3 py-2 text-body text-ink">A request for ****{(pending as { msisdn: string }).msisdn.slice(-4)} is waiting for review.</p> : null}
+        {pending ? <p role="status" className="rounded-md bg-accent-soft border border-accent/50 px-3 py-2 text-body text-ink">A request for ****{(pending as { msisdn: string }).msisdn.slice(-4)} is waiting for review.</p> : null}
         <ActionForm action={requestPayoutAccount} submitLabel={approved ? 'Request a change' : 'Request approval'} className="grid items-end gap-3 sm:grid-cols-[1fr_1fr_auto]">
           <Input label="M-Pesa number" name="msisdn" type="tel" required />
           <Input label="Name on the number" name="account_name" required minLength={2} />
@@ -122,7 +122,7 @@ export default async function Settings() {
 
       <section aria-labelledby="t-h" className="flex flex-col gap-4">
         <h2 id="t-h" className="text-h2 text-ink-muted">Colours and fonts</h2>
-        {!canTheme ? <p className="rounded-lg bg-tint-alt border border-line px-4 py-4 text-body text-ink">Custom colours and fonts are part of the Advanced plan. Your storefront uses the standard look.</p> : (
+        {!canTheme ? <p className="rounded-lg bg-accent-soft border border-accent/50 px-4 py-4 text-body text-ink">Custom colours and fonts are part of the Advanced plan. Your storefront uses the standard look.</p> : (
           <>
             <ActionForm action={saveTheme} submitLabel="Save branding">
               <div className="grid gap-4 sm:grid-cols-3">

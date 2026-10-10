@@ -23,7 +23,9 @@ export function BottomTabBar() {
             <li key={t.href} className="flex-1">
               <Link href={t.href} aria-current={active ? 'page' : undefined}
                 className={`flex h-14 flex-col items-center justify-center gap-0.5 text-caption ${active ? 'font-semibold text-brand-contrast' : 'text-brand-contrast/75'}`}>
-                <Icon name={t.icon} size={22} filled={active} />
+                <span className={`grid h-7 w-14 place-items-center rounded-pill transition-all duration-200 ${active ? 'bg-accent text-accent-contrast' : ''}`}>
+                  <Icon name={t.icon} size={22} filled={active} />
+                </span>
                 <span>{t.label}</span>
               </Link>
             </li>

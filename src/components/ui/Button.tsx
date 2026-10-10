@@ -9,10 +9,10 @@ type Size = 'sm' | 'md' | 'lg';
 
 const variants: Record<Variant, string> = {
   primary: 'bg-brand text-brand-contrast hover:bg-brand/90 shadow-sm active:bg-brand/95',
-  secondary: 'bg-surface text-ink-muted border border-line hover:border-brand/40 hover:text-ink active:bg-surface-alt',
+  secondary: 'bg-surface text-ink-muted border border-line hover:border-accent hover:bg-accent-soft hover:text-ink active:bg-accent/25',
   accent: 'bg-accent text-accent-contrast hover:bg-accent/90 shadow-sm active:bg-accent/95',
-  outline: 'border border-line/60 text-ink-muted hover:border-brand/50 hover:bg-brand/5 hover:text-ink active:bg-brand/10',
-  ghost: 'text-ink-muted hover:bg-ink/5 active:bg-ink/10',
+  outline: 'border border-line text-ink-muted hover:border-accent hover:bg-accent-soft hover:text-ink active:bg-accent/25',
+  ghost: 'text-ink-muted hover:bg-accent-soft hover:text-ink active:bg-accent/25',
   danger: 'bg-danger text-white hover:bg-danger/90 shadow-sm active:bg-danger/95',
 };
 

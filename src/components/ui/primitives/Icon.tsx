@@ -4,9 +4,11 @@ import {
   CaretRight, CaretDown, ArrowsClockwise, Clock, Star, Phone, Envelope, CalendarBlank, MapPin, Question, Info,
   Warning, ShieldCheck, Tag, Package, Trash, PencilSimple, DownloadSimple, UploadSimple, ArrowSquareOut,
   House, ForkKnife, Receipt, User, Eye, EyeSlash, DeviceMobile, CheckCircle, WarningCircle, Hourglass,
+  EnvelopeSimpleOpen, EnvelopeSimple, Checks, Image as ImageIcon, MagnifyingGlassPlus, MagnifyingGlassMinus,
+  ArrowCounterClockwise, ArrowClockwise, Crop, BellRinging,
 } from '@phosphor-icons/react/dist/ssr';
 
-export type IconName = 'check' | 'arrow-right' | 'plus' | 'minus' | 'x' | 'menu' | 'search' | 'bell' | 'cart' | 'log-out' | 'settings' | 'users' | 'money' | 'chevron-right' | 'chevron-down' | 'refresh' | 'clock' | 'star' | 'phone' | 'mail' | 'calendar' | 'map-pin' | 'help-circle' | 'info-circle' | 'alert-triangle' | 'shield' | 'tag' | 'package' | 'trash' | 'pencil' | 'download' | 'upload' | 'external-link' | 'home' | 'menu-book' | 'receipt' | 'user' | 'eye' | 'eye-slash' | 'mobile' | 'check-circle' | 'warning-circle' | 'hourglass';
+export type IconName = 'check' | 'arrow-right' | 'plus' | 'minus' | 'x' | 'menu' | 'search' | 'bell' | 'cart' | 'log-out' | 'settings' | 'users' | 'money' | 'chevron-right' | 'chevron-down' | 'refresh' | 'clock' | 'star' | 'phone' | 'mail' | 'calendar' | 'map-pin' | 'help-circle' | 'info-circle' | 'alert-triangle' | 'shield' | 'tag' | 'package' | 'trash' | 'pencil' | 'download' | 'upload' | 'external-link' | 'home' | 'menu-book' | 'receipt' | 'user' | 'eye' | 'eye-slash' | 'mobile' | 'check-circle' | 'warning-circle' | 'hourglass' | 'mark-read' | 'mark-unread' | 'checks' | 'image' | 'zoom-in' | 'zoom-out' | 'rotate-left' | 'rotate-right' | 'crop' | 'bell-ringing';
 
 type Weight = 'regular' | 'bold' | 'fill';
 type PhosphorIcon = ComponentType<{ size?: number; weight?: Weight; className?: string; 'aria-hidden'?: boolean }>;
@@ -23,6 +25,9 @@ const icons: Record<IconName, { C: PhosphorIcon; weight?: Weight }> = {
   'external-link': { C: ArrowSquareOut }, home: { C: House }, 'menu-book': { C: ForkKnife }, receipt: { C: Receipt }, user: { C: User },
   eye: { C: Eye }, 'eye-slash': { C: EyeSlash }, mobile: { C: DeviceMobile }, 'check-circle': { C: CheckCircle, weight: 'fill' },
   'warning-circle': { C: WarningCircle, weight: 'fill' }, hourglass: { C: Hourglass },
+  'mark-read': { C: EnvelopeSimpleOpen }, 'mark-unread': { C: EnvelopeSimple }, checks: { C: Checks }, image: { C: ImageIcon },
+  'zoom-in': { C: MagnifyingGlassPlus }, 'zoom-out': { C: MagnifyingGlassMinus }, 'rotate-left': { C: ArrowCounterClockwise },
+  'rotate-right': { C: ArrowClockwise }, crop: { C: Crop }, 'bell-ringing': { C: BellRinging },
 };
 
 export interface IconProps extends SVGAttributes<SVGElement> { name: IconName; size?: number; filled?: boolean }

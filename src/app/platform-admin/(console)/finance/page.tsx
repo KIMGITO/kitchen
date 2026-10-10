@@ -36,7 +36,7 @@ export default async function Finance() {
   return (
     <div className="flex max-w-5xl flex-col gap-12">
       <h1 className="text-h1">Finance</h1>
-      {(failedDeliveries ?? 0) > 0 ? <p role="status" className="rounded-md bg-tint-alt border border-line p-3 text-body">{failedDeliveries} email/SMS notifications failed to send. Check your email and SMS provider settings.</p> : null}
+      {(failedDeliveries ?? 0) > 0 ? <p role="status" className="rounded-md bg-accent-soft border border-accent/50 p-3 text-body">{failedDeliveries} email/SMS notifications failed to send. Check your email and SMS provider settings.</p> : null}
 
       <section aria-labelledby="c-h" className="flex flex-col gap-3"><h2 id="c-h" className="text-h2">Platform commission</h2>
         <p className="text-body">Currently: <strong>{cur?.enabled ? `${cur.percent_bps / 100}% + ${m(cur.fixed_minor)} per order` : 'OFF'}</strong>. Kitchen overrides and plan rules take priority.</p>

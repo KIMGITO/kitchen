@@ -1,5 +1,6 @@
 'use client';
-import { useActionState, type ReactNode } from 'react';
+import { useActionState, useEffect, type ReactNode } from 'react';
+import { toast } from '@/stores/toast';
 import { SubmitButton } from './SubmitButton';
 import type { ActionResult } from '@/lib/actions/result';
 
@@ -9,6 +10,10 @@ type Action = (prev: ActionResult | null, formData: FormData) => Promise<ActionR
 export function ActionForm({ action, submitLabel, pendingLabel, children, className, variant = 'primary' }:
   { action: Action; submitLabel: string; pendingLabel?: string; children?: ReactNode; className?: string; variant?: 'primary' | 'accent' | 'outline' | 'danger' }) {
   const [state, formAction, pending] = useActionState(action, null);
+  useEffect(() => {
+    if (!state) return;
+    if (state.ok) { if (state.message) toast.success(state.message); } else toast.error(state.error);
+  }, [state]);
   return (
     <form action={formAction} className={className ?? 'flex flex-col gap-4'}>
       {children}

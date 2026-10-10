@@ -5,7 +5,7 @@ export function SectionHeader({ eyebrow, title, href, linkLabel }: { eyebrow?: s
   return (
     <div className="reveal flex items-end justify-between gap-4">
       <div>
-        {eyebrow ? <p className="text-eyebrow uppercase text-ink-soft">{eyebrow}</p> : null}
+        {eyebrow ? <p className="flex items-center gap-2 text-eyebrow uppercase text-ink-soft"><span aria-hidden className="h-1 w-6 rounded-full bg-accent" />{eyebrow}</p> : null}
         <h2 className="mt-1 text-h2 text-ink">{title}</h2>
       </div>
       {href ? (

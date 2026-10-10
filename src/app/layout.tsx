@@ -5,6 +5,8 @@ import { baseFontClassNames, fontVariables } from '@/theme/fonts';
 import { defaultTheme } from '@/theme/theme';
 import { themeToCss } from '@/theme/resolve';
 import { getTenantOptional } from '@/lib/tenant/get-tenant';
+import { Suspense } from 'react';
+import { NavProgress } from '@/components/ui/NavProgress';
 import { Toaster } from '@/components/ui/Toaster';
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -36,6 +38,7 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
         <style dangerouslySetInnerHTML={{ __html: css }} />
       </head>
       <body suppressHydrationWarning>
+        <Suspense fallback={null}><NavProgress /></Suspense>
         {children}
         <Toaster />
       </body>

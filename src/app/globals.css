@@ -154,7 +154,7 @@
 
   /* Choice chips: radio-style selection. */
   .choice-chip {
-    @apply inline-flex h-11 cursor-pointer items-center justify-between gap-3 rounded-md border border-line/60 px-4 transition-all duration-150 hover:border-brand/50 hover:bg-brand/5 hover:text-ink-muted has-[:checked]:border-brand has-[:checked]:bg-brand/5 has-[:checked]:font-semibold;
+    @apply inline-flex h-11 cursor-pointer items-center justify-between gap-3 rounded-md border border-line/60 px-4 transition-all duration-150 hover:border-accent hover:bg-accent-soft/60 hover:text-ink has-[:checked]:border-accent has-[:checked]:bg-accent-soft has-[:checked]:font-semibold;
   }
 
   /* Value pills for status/muted chips. */
@@ -427,3 +427,10 @@ input[type='number'] {
   -moz-appearance: textfield;
   appearance: textfield;
 }
+
+@keyframes uploadSlide { 0% { transform: translateX(-100%); } 100% { transform: translateX(300%); } }
+@media (prefers-reduced-motion: reduce) { .animate-\[uploadSlide_1\.1s_ease-in-out_infinite\] { animation: none; } }
+
+/* Short amber accent under page titles (h1.text-h1 only; hero uses text-display). */
+main h1.text-h1::after, .page-shell h1.text-h1::after { content: ''; display: block; margin-top: 0.5rem; height: 4px; width: 2.5rem; border-radius: 9999px; background: rgb(var(--color-accent)); }
+::selection { background: rgb(var(--color-accent) / 0.4); }
