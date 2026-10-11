@@ -115,6 +115,13 @@ anything else → a kitchen (tenant). The internal prefixes cannot be reached by
 client-sent tenant header and sets its own, then server code resolves the kitchen with `resolve_tenant(hostname)`.
 Custom domains are just extra rows in `tenant_domains` (a Pro-plan feature in the entitlement model).
 
+**Subscriptions & billing.**
+- **One kitchen, one subscription.** Each `tenants` row has at most one live subscription. To run a second kitchen, its owner subscribes separately from that kitchen's own account (`/dashboard/billing`).
+- **Terms.** Monthly = **30 days**, yearly = **30 × 12 + 7 = 367 days** (`src/lib/subscription/duration.ts`). Custom lengths of 1–367 days are priced pro-rata from the monthly rate. Renewing while time remains extends from the current period end, so no paid time is ever lost; renewing a lapsed plan starts from today.
+- **Plan changes keep time.** `change_plan()` upgrades/downgrades the plan immediately but leaves `current_period_end` untouched, so the owner keeps every paid day.
+- **Status & enforcement.** The `subscription_health` view computes a status: `trialing`, `active`, `expiring_soon` (≤ 7 days left), `past_due`, `expired`, `suspended`, `cancelled`. Only `trialing`/`active`/`expiring_soon` are "live". Anything else makes the back office **read-only**: the owner/admin can still log in and view everything, but writes are blocked by `tenant_entitlements()` and a banner explains the state (expiry date, suspension reason, or a renew link). Owners can self-suspend (pause) and reactivate from the billing page.
+- **Auth.** Expired sessions force a clean logout: the middleware drops the stale cookie, `useSessionGuard` re-checks on tab focus, and checkout re-authenticates right before creating an order — a lapsed customer is sent to `/login?next=/checkout&notice=expired` instead of hitting a cryptic RPC error.
+
 **Design system.** Components contain no colours, fonts or text sizes. They use utilities generated from `theme.ts`
 (`bg-brand`, `text-h2`, `font-display`). A kitchen can override six colours and two fonts (Advanced plan feature
 `custom_theme`); `resolveTheme` drops unknown keys and falls back to defaults if contrast drops below 4.5:1.
@@ -258,6 +265,8 @@ at another kitchen's customer, product or order. Money is `bigint` minor units (
 | 015 enum values | `payout_status` gains `processing` (separate file: new enum values must commit first) |
 | 016 automation | rate limiting (wrappers around order/payment/registration/invite functions), notification settings + delivery queue + enqueue trigger, receipt backfill, payout accounts, B2C payout functions, `refunds` + reversal functions, RLS for the new tables |
 | 017 platform setup | `platform_setup_required()`, `claim_platform_ownership()` — one-time first-run claim of the platform owner |
+| 020 subscription lifecycle | `subscription_health` view (computed status), `activate/renew/suspend/reactivate_subscription()`, `change_plan()`, `tenant_entitlements()` gate — one active subscription per kitchen, read-only when not active |
+| 021 plan billing fields | `plans` gains `price_monthly_minor`, `price_yearly_minor`, `description`, `staff_limit`, `is_public` (backfilled from the legacy price) for the self-service billing page |
 
 Security rules the schema enforces:
 
@@ -371,6 +380,14 @@ For near-instant delivery, add a **Database Webhook** on `notification_deliverie
 3. Authentication -> URL Configuration: add `https://*.yourdomain.com/auth/callback` (and each custom tenant domain, plus `http://localhost:3000/auth/callback` for dev).
 4. Staff and platform admins are blocked: `/auth/callback` signs out any Google sign-in whose account is a kitchen team member or platform staff (`is_staff_account()`), and the staff, invite and platform-setup pages never show the Google button.
 5. Recommended in Supabase Auth settings: minimum password length 8, require letters and digits, and keep "confirm email" on.
+
+**Password reset (customers, staff and platform admins).**
+1. Any login page has a "Forgot password?" link -> `/forgot-password`. Entering an email calls `resetPasswordForEmail` with a `redirectTo` of `<origin>/auth/callback?next=/reset-password?return=<login-page>&flow=recovery`. The same confirmation is shown whether or not the address exists, so the form can't be used to enumerate accounts.
+2. The email link is opened in the browser and exchanged for a session by `/auth/callback`. `flow=recovery` makes the callback send the user straight to `/reset-password` (skipping the Google/customer-onboarding path) regardless of their last sign-in provider.
+3. `/reset-password` requires that signed-in session (an expired/used link, or a direct visit, shows "request a new link"). It validates the new password with the shared `checkPassword` policy, calls `auth.updateUser({ password })`, signs the recovery session out, and shows a confirmation linking back to the right login page.
+4. Requires the same Supabase URL Configuration as above: add `/auth/callback` to the redirect allow-list for each domain (the reset email's `redirectTo` points there). Reset works independently of the "confirm email" setting. Note the PKCE flow means the reset link must be opened in the **same browser** that requested it (standard for `@supabase/ssr`).
+5. `/forgot-password` and `/reset-password` are disallowed in `robots.txt`.
+
 
 
 How the functions protect money:

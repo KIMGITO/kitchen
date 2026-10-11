@@ -21,6 +21,11 @@ export async function GET(request: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.redirect(`${origin}/login?error=oauth_failed`);
 
+  // Password recovery: the exchanged code came from a reset email. Always send the user
+  // straight to the reset page (carried in `next`), regardless of their last sign-in
+  // provider, so a Google-first account is never routed through customer onboarding.
+  if (searchParams.get('flow') === 'recovery') return NextResponse.redirect(`${origin}${safe}`);
+
   const lastProvider = [...(user.identities ?? [])].sort((a, b) => (b.last_sign_in_at ?? '').localeCompare(a.last_sign_in_at ?? ''))[0]?.provider;
   if (lastProvider !== 'google' && searchParams.get('flow') !== 'customer') return NextResponse.redirect(`${origin}${safe}`);
 

@@ -16,6 +16,8 @@ export const AUTH_NOTICES: Record<string, string> = {
   staff_account: 'That Google account belongs to a kitchen or platform team member. Team members sign in with their email and password at /staff-login.',
   oauth_failed: 'Google sign-in did not complete. Please try again.',
   register_failed: 'We signed you in but could not create your customer account. Try again.',
+  expired: 'Your session has expired. Please log in again to continue.',
+  password_reset: 'Your password has been updated. Log in with your new password.',
 };
 
 /** Only same-site relative paths are allowed as post-login targets. */
@@ -70,6 +72,7 @@ export function LoginForm({ tenantId, tenantName, next, notice }: Props) {
     <form onSubmit={onSubmit} className="flex flex-col gap-4">
       <Input label="Email" name="email" type="email" required autoComplete="email" />
       <Input label="Password" name="password" type="password" required autoComplete="current-password" />
+      <p className="-mt-2 text-right text-caption"><Link href="/forgot-password" className="text-ink-soft underline">Forgot password?</Link></p>
       {error ? <p role="alert" className="text-caption text-danger">{error}</p> : null}
       <Button type="submit" loading={busy} loadingText="Logging in…" autoLoading={false}>Log in</Button>
       <p className="text-caption text-ink-soft">New to {tenantName}? <Link href="/register" className="underline">Create an account</Link></p>

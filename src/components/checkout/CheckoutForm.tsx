@@ -44,6 +44,14 @@ export function CheckoutForm(p: Props) {
     setBusy(true);
     const supabase = createClient();
     try {
+      // Re-auth at order time: confirm the session is still valid before creating the
+      // order. If it has lapsed, bounce the customer to log in rather than letting the
+      // RPC fail cryptically. `return` brings them straight back to checkout.
+      const { data: auth } = await supabase.auth.getUser();
+      if (!auth.user) {
+        router.replace(`/login?next=/checkout&notice=expired`);
+        return;
+      }
       let address: string | null = null;
       if (fulfilment === 'delivery') {
         if (addressId === 'new') {

@@ -3,6 +3,8 @@ import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { getTenant } from '@/lib/tenant/get-tenant';
 import { getPermissions, getUser } from '@/lib/auth/session';
+import { getSubscriptionHealth } from '@/lib/auth/subscription';
+import { SubscriptionBanner } from '@/components/dashboard/SubscriptionBanner';
 import { NotificationBell } from '@/components/ui/NotificationBell';
 import { LogoutButton } from '@/components/account/LogoutButton';
 import { NavLink } from '@/components/ui/primitives/NavLink';
@@ -22,7 +24,7 @@ const NAV = [
 ] as const;
 
 export default async function DashboardLayout({ children }: { children: ReactNode }) {
-  const [tenant, user, perms] = await Promise.all([getTenant(), getUser(), getPermissions()]);
+  const [tenant, user, perms, health] = await Promise.all([getTenant(), getUser(), getPermissions(), getSubscriptionHealth()]);
   if (!user) redirect('/staff-login?next=/dashboard');
   if (perms.toArray().length === 0) redirect('/');
 
@@ -44,7 +46,10 @@ export default async function DashboardLayout({ children }: { children: ReactNod
         </nav>
         <div className="hidden px-5 py-4 md:block"><LogoutButton redirectTo="/staff-login" /></div>
       </aside>
-      <div className="min-w-0 p-4 sm:p-8">{children}</div>
+      <div className="min-w-0 p-4 sm:p-8">
+        <SubscriptionBanner health={health} />
+        {children}
+      </div>
     </div>
   );
 }

@@ -1,5 +1,6 @@
 'use client';
 import { useState, type FormEvent } from 'react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { Button } from '@/components/ui/Button';
@@ -9,7 +10,7 @@ import { checkPassword, PASSWORD_HINT } from '@/lib/auth/password';
 
 const safeNext = (n?: string) => (n && n.startsWith('/') && !n.startsWith('//') ? n : '/dashboard');
 
-export function StaffLoginForm({ next }: { next?: string }) {
+export function StaffLoginForm({ next, loginPath = '/staff-login' }: { next?: string; loginPath?: string }) {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -24,6 +25,7 @@ export function StaffLoginForm({ next }: { next?: string }) {
     <form onSubmit={onSubmit} className="flex flex-col gap-4">
       <Input label="Email" name="email" type="email" required autoComplete="email" />
       <Input label="Password" name="password" type="password" required autoComplete="current-password" />
+      <p className="-mt-2 text-right text-caption"><Link href={`/forgot-password?return=${encodeURIComponent(loginPath)}`} className="text-ink-soft underline">Forgot password?</Link></p>
       {error ? <p role="alert" className="text-caption text-danger">{error}</p> : null}
       <Button type="submit" loading={busy} loadingText="Logging in…" autoLoading={false}>Log in</Button>
     </form>
