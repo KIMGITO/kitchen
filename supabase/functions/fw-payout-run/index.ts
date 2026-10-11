@@ -4,9 +4,14 @@
 // Does nothing unless platform_settings.auto_payouts_enabled is true, and only pays kitchens with an APPROVED payout account.
 import { json, serviceClient } from '../_shared/clients.ts';
 import { sendTransfer, type BegunPayout } from '../_shared/flutterwave-payout.ts';
+import { timingSafeEqual } from '../_shared/mpesa-utils.ts';
+
+const serviceKey = () => `Bearer ${Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')}`;
+/** Constant-time bearer check: the scheduler secret must not leak through a comparison side-channel. */
+const isScheduler = (req: Request) => timingSafeEqual(req.headers.get('Authorization') ?? '', serviceKey());
 
 Deno.serve(async (req) => {
-  if (req.headers.get('Authorization') !== `Bearer ${Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')}`) return json({ error: 'forbidden' }, 403);
+  if (!isScheduler(req)) return json({ error: 'forbidden' }, 403);
   const { flush } = await req.json().catch(() => ({}));
   const svc = serviceClient();
   const { data: created, error } = await svc.rpc('run_auto_payouts', { p_flush: flush === true });

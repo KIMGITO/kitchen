@@ -36,6 +36,10 @@ export const verifyByReference = (txRef: string) => fwFetch<VerifiedCharge>(`/tr
 
 export const createPaymentLink = (body: Record<string, unknown>) => fwFetch<{ link?: string }>('/payments', { method: 'POST', body });
 
+/** Real status of a transfer we started, by the transfer id Flutterwave returned (stored in payouts.conversation_id). */
+export const getTransfer = (id: string | number) =>
+  fwFetch<{ id?: number | string; status?: string; amount?: number; reference?: string; complete_message?: string; narration?: string }>(`/transfers/${encodeURIComponent(String(id))}`);
+
 /** Refund (full when `amountMinor` equals the payment). Asynchronous on Flutterwave's side. */
 export const refundTransaction = (txId: string | number, amountMinor: number) =>
   fwFetch<{ id?: number; status?: string; amount_refunded?: number }>(`/transactions/${encodeURIComponent(String(txId))}/refund`, {

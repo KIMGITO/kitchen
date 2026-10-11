@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { buildTxRef, isOrderTxRef, judgeCharge, parseTransferEvent, toMajor, toMinor } from '../supabase/functions/_shared/flutterwave-utils';
+import { buildTxRef, isOrderTxRef, judgeCharge, judgeTransferStatus, parseTransferEvent, toMajor, toMinor } from '../supabase/functions/_shared/flutterwave-utils';
 
 const base = { id: 4242, tx_ref: 'fw_abc', flw_ref: 'FLW-REF-1', amount: 1250.5, currency: 'KES', status: 'successful' };
 const expected = { txRef: 'fw_abc', currency: 'KES' };
@@ -40,6 +40,20 @@ describe('judgeCharge (what a verified transaction means for our payment)', () =
   });
   it('reports the real paid amount so a short payment is flagged by the database, not silently accepted', () => {
     expect(judgeCharge({ ...base, amount: 500 }, expected)).toMatchObject({ kind: 'success', amountMinor: 50000 });
+  });
+});
+
+describe('judgeTransferStatus (single-transfer GET, used by payment-reconcile)', () => {
+  it('maps Flutterwave transfer statuses to what they mean for our payout', () => {
+    expect(judgeTransferStatus('SUCCESSFUL')).toBe('successful');
+    expect(judgeTransferStatus('success')).toBe('successful');
+    expect(judgeTransferStatus('FAILED')).toBe('failed');
+    expect(judgeTransferStatus('failure')).toBe('failed');
+    // Anything else (NEW, PENDING, ...) is still in flight: reconcile leaves the payout `processing`.
+    expect(judgeTransferStatus('PENDING')).toBe('pending');
+    expect(judgeTransferStatus('NEW')).toBe('pending');
+    expect(judgeTransferStatus(undefined)).toBe('pending');
+    expect(judgeTransferStatus(null)).toBe('pending');
   });
 });
 

@@ -4,7 +4,12 @@
 -- Duration conventions (mirrored in src/lib/subscription/duration.ts):
 --   month = 30 days; year = 30*12 + 7 = 371 days; custom = explicit days (<= 367).
 
--- 1. New lifecycle statuses. `suspended` is added to the existing enum.
+-- 1. New lifecycle statuses. `suspended` is added to the existing enum here so this migration is SELF-CONTAINED
+--    (it no longer depends on a separate file being applied first). PostgreSQL forbids USING a just-added enum
+--    value in the same transaction (SQLSTATE 55P04) - e.g. `create view ... status = 'suspended'` would fail.
+--    We avoid that by comparing the status as TEXT below (`status::text = 'suspended'`), which is resolved at
+--    runtime, not when the view is created. The plpgsql functions only plan their bodies on first call, so they
+--    are safe too. `if not exists` makes this a no-op if 019b (or an earlier run) already added the value.
 alter type public.subscription_status add value if not exists 'suspended' after 'past_due';
 
 -- 2. Lifecycle columns.
@@ -29,11 +34,11 @@ select s.tenant_id,
        s.suspended_reason,
        s.auto_renew,
        case
-         when s.status = 'suspended' then 'suspended'
-         when s.status = 'cancelled' then 'cancelled'
-         when s.status = 'past_due'  then 'past_due'
+         when s.status::text = 'suspended' then 'suspended'
+         when s.status::text = 'cancelled' then 'cancelled'
+         when s.status::text = 'past_due'  then 'past_due'
          when s.current_period_end is not null and s.current_period_end <= now() then 'expired'
-         when s.status = 'trialing' then 'trialing'
+         when s.status::text = 'trialing' then 'trialing'
          when s.current_period_end is not null
               and s.current_period_end <= now() + interval '7 days' then 'expiring_soon'
          else 'active'

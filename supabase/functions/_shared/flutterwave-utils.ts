@@ -44,6 +44,14 @@ export function judgeCharge(v: VerifiedCharge, expected: { txRef: string; curren
 
 export interface TransferEvent { reference: string; status: 'SUCCESSFUL' | 'FAILED' | 'OTHER'; id: string; amountMinor: number | null; message: string }
 
+/** Normalise a Flutterwave transfer status (from the single-transfer GET) to what it means for our payout. */
+export function judgeTransferStatus(status: string | undefined | null): 'successful' | 'failed' | 'pending' {
+  const s = String(status ?? '').toUpperCase();
+  if (s === 'SUCCESSFUL' || s === 'SUCCESS') return 'successful';
+  if (s === 'FAILED' || s === 'FAILURE') return 'failed';
+  return 'pending';
+}
+
 /** Parse the data object of a `transfer.completed` webhook. */
 export function parseTransferEvent(d: Record<string, unknown> | undefined): TransferEvent | null {
   if (!d || typeof d.reference !== 'string') return null;

@@ -27,6 +27,9 @@ Deno.serve(async (req) => {
     await svc.rpc('fail_b2c_initiation', { p_payout: payout_id, p_desc: 'amount_not_whole_shillings' });
     return json({ error: 'amount_not_whole_shillings' }, 409, corsHeaders);
   }
+  // begin_b2c_payout is shared with the Daraja path, so label the rail here: payment-reconcile only re-queries
+  // Flutterwave for `processing` transfers, and only ever completes/fails them (it never re-sends).
+  await svc.rpc('mark_payout_provider', { p_payout: payout_id, p_provider: 'flutterwave' });
   const { data: name } = await svc.rpc('payout_account_name', { p_tenant: p.tenant_id });
   const r = await sendTransfer(svc, payout_id, p, String(name ?? 'Kitchen'));
   if (r.ok) return json({ ok: true, message: 'Payout sent to Flutterwave. It completes when the transfer is confirmed.' }, 200, corsHeaders);

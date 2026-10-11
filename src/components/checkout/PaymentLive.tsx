@@ -67,11 +67,12 @@ export function PaymentLive({ orderId, orderStatus, initial }: { orderId: string
   if (!pay) return null;
 
   if (pay.status === 'SUCCEEDED') {
+    const viaCard = pay.provider === 'flutterwave';   // hosted checkout can be M-Pesa OR card; don't claim M-Pesa
     return (
       <div role="status" className="flex items-start gap-3 rounded-lg border border-success/40 bg-success/10 p-4">
         <Icon name="check-circle" size={32} className="animate-pop shrink-0 text-success" />
         <div><p className="text-h3 text-ink">Payment received</p>
-          <p className="text-body text-ink-muted">{pay.provider_receipt ? <>M-Pesa reference <strong>{pay.provider_receipt}</strong>. </> : 'Your M-Pesa confirmation message is on its way. '}Your receipt is sent by SMS and email.</p></div>
+          <p className="text-body text-ink-muted">{pay.provider_receipt ? <>Payment reference <strong>{pay.provider_receipt}</strong>. </> : viaCard ? 'Your payment is confirmed. ' : 'Your M-Pesa confirmation message is on its way. '}Your receipt is sent by SMS and email.</p></div>
       </div>
     );
   }

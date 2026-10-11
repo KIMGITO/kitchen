@@ -137,10 +137,28 @@ select pg_temp.assert(:pamt = ((select kitchen_net_minor from public.orders wher
 select pg_temp.assert((select count(*) from public.run_auto_payouts(false)) = 0, 'a pending payout is not paid twice');
 select originator_id as orig, msisdn as dest, account_name as nm from public.begin_fw_payout(:'po') \gset
 select pg_temp.assert(:'dest' = '254712345678' and :'nm' = 'Kitchen A Owner', 'transfer goes to the APPROVED number and holder name');
+select pg_temp.assert((select provider from public.payouts where id = :'po') = 'flutterwave', 'scheduled Flutterwave payout is labelled provider=flutterwave');
 select pg_temp.assert(pg_temp.raises(format($q$select * from public.begin_fw_payout('%s')$q$, :'po'), 'payout_not_pending'), 'a processing payout cannot be started again');
 select public.complete_b2c_payout(:'orig', 'TRF-1', :pamt, '{"source":"flutterwave"}');
 select public.complete_b2c_payout(:'orig', 'TRF-1', :pamt, '{"source":"flutterwave"}');   -- webhook redelivery
 select pg_temp.reset();
 select pg_temp.assert((select status from public.payouts where id = :'po') = 'completed' and (select count(*) from public.ledger_entries where payout_id = :'po') = 1, 'completed transfer posts exactly one ledger payout entry');
 select pg_temp.assert((select coalesce(sum(amount_minor),0) from public.ledger_entries where tenant_id = :'ta') < 100, 'kitchen balance is paid out (only sub-shilling remainder left)');
+
+-- ---------- provider labelling for payment-reconcile (025) ----------
+-- The manual admin path reuses begin_b2c_payout (no provider set), so fw-payout tags it via mark_payout_provider.
+-- Legacy/Daraja rows keep the 'mpesa' default, so reconcile only ever re-queries Flutterwave transfers.
+select pg_temp.as_service();
+insert into public.payouts (tenant_id, amount_minor, currency, method, note)
+  values (:'ta', 20000, 'KES', 'mpesa_b2c', 'manual') returning id as pman \gset
+select pg_temp.assert((select provider from public.payouts where id = :'pman') = 'mpesa', 'a new payout defaults to provider=mpesa (Daraja/manual)');
+select public.mark_payout_provider(:'pman', 'flutterwave');
+select pg_temp.reset();
+select pg_temp.assert((select provider from public.payouts where id = :'pman') = 'flutterwave', 'mark_payout_provider tags a manual Flutterwave payout');
+-- Unknown provider values are ignored, and completed/failed payouts cannot be re-tagged.
+select pg_temp.as_service();
+select public.mark_payout_provider(:'pman', 'paypal');
+select public.mark_payout_provider(:'po', 'flutterwave');   -- :po is already completed
+select pg_temp.reset();
+select pg_temp.assert((select provider from public.payouts where id = :'pman') = 'flutterwave', 'an invalid provider value leaves the label unchanged');
 rollback;
