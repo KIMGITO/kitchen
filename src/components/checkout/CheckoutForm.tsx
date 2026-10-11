@@ -8,7 +8,7 @@ import { EmptyState } from '@/components/ui/EmptyState';
 import { formatMoney } from '@/lib/commerce/money';
 import { friendlyError } from '@/lib/errors';
 import { PhoneInput } from '@/components/ui/PhoneInput';
-import { requestMpesaPayment } from '@/lib/payments-client';
+import { startPayment } from '@/lib/payments-client';
 import { cartSubtotal, selectLines, useCartStore } from '@/stores/cart';
 import Link from 'next/link';
 
@@ -74,8 +74,10 @@ export function CheckoutForm(p: Props) {
       if (oErr || !orderId) throw new Error(oErr?.message ?? 'order_failed');
 
       clear(p.tenantId);
-      const pay = await requestMpesaPayment(orderId as string, phone);
-      router.push(`/orders/${orderId}${pay.ok ? '' : '?pay=retry'}`);
+      const pay = await startPayment(orderId as string, phone);
+      // Hand over to Flutterwave's secure page; it returns the customer to /orders/<id> when done.
+      if (pay.ok && pay.link) { window.location.assign(pay.link); return; }
+      router.push(`/orders/${orderId}?pay=retry`);
     } catch (err) {
       setBusy(false);
       setError(friendlyError((err as Error).message, 'We could not place your order. Check your connection and try again.'));

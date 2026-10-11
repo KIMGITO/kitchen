@@ -26,7 +26,7 @@ export default async function OrderPage({ params, searchParams }: { params: Prom
     .eq('id', id).eq('tenant_id', tenant.id).maybeSingle();
   if (!order) notFound();
   const status = order.status as OrderStatus;
-  const { data: lastPay } = await supabase.from('payments').select('status, result_code, result_desc, provider_receipt, created_at').eq('order_id', id).order('created_at', { ascending: false }).limit(1).maybeSingle();
+  const { data: lastPay } = await supabase.from('payments').select('status, result_code, result_desc, provider_receipt, created_at, provider, checkout_url').eq('order_id', id).order('created_at', { ascending: false }).limit(1).maybeSingle();
 
   return (
     <Section>

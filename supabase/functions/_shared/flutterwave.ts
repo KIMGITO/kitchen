@@ -1,90 +1,70 @@
-// Shared Flutterwave V3 client for Edge Functions (Deno).
-// No npm deps: plain fetch against https://api.flutterwave.com/v3.
+// Flutterwave v3 client for Edge Functions (Deno). Plain fetch, no npm dependencies.
+import { toMajor } from './flutterwave-utils.ts';
+import { timingSafeEqual } from './mpesa-utils.ts';
+import type { VerifiedCharge } from './flutterwave-utils.ts';
 
-export const FW_BASE = "https://api.flutterwave.com/v3";
+export const FW_BASE = 'https://api.flutterwave.com/v3';
 
-export function fwSecret(): string {
-  const key = Deno.env.get("FLUTTERWAVE_SECRET_KEY") ?? "";
-  if (!key) throw new Error("FLUTTERWAVE_SECRET_KEY is not set");
+function secretKey(): string {
+  const key = Deno.env.get('FLUTTERWAVE_SECRET_KEY') ?? '';
+  if (!key) throw new Error('FLUTTERWAVE_SECRET_KEY is not set');
   return key;
 }
 
-export interface FwResult<T = unknown> {
-  ok: boolean;
-  status: string;
-  message: string;
-  data: T | null;
-  rawStatus: number;
-}
+export interface FwResult<T = unknown> { ok: boolean; status: string; message: string; data: T | null; http: number }
 
-/** POST/GET helper with the secret bearer token. Never logs the key. */
-export async function fwFetch<T = unknown>(
-  path: string,
-  init: { method?: string; body?: unknown } = {},
-): Promise<FwResult<T>> {
+/** Call the Flutterwave API. Never logs the key. A network failure THROWS (callers treat that as "outcome unknown"). */
+export async function fwFetch<T = unknown>(path: string, init: { method?: string; body?: unknown } = {}): Promise<FwResult<T>> {
   const res = await fetch(`${FW_BASE}${path}`, {
-    method: init.method ?? "GET",
-    headers: {
-      Authorization: `Bearer ${fwSecret()}`,
-      "Content-Type": "application/json",
-    },
+    method: init.method ?? 'GET',
+    headers: { Authorization: `Bearer ${secretKey()}`, 'Content-Type': 'application/json' },
     body: init.body === undefined ? undefined : JSON.stringify(init.body),
+    signal: AbortSignal.timeout(25_000),
   });
-  let json: { status?: string; message?: string; data?: T } = {};
-  try {
-    json = await res.json();
-  } catch {
-    /* non-JSON upstream body */
-  }
+  let j: { status?: string; message?: string; data?: T } = {};
+  try { j = await res.json(); } catch { /* non-JSON upstream body */ }
   return {
-    ok: res.ok && json.status === "success",
-    status: String(json.status ?? (res.ok ? "success" : "error")),
-    message: String(json.message ?? `Flutterwave error (HTTP ${res.status})`),
-    data: (json.data ?? null) as T | null,
-    rawStatus: res.status,
+    ok: res.ok && j.status === 'success', status: String(j.status ?? (res.ok ? 'success' : 'error')),
+    message: String(j.message ?? `Flutterwave error (HTTP ${res.status})`), data: (j.data ?? null) as T | null, http: res.status,
   };
 }
 
-/**
- * Webhook verification. In the Flutterwave dashboard set the webhook "Secret Hash";
- * every event arrives with that value in the `verif-hash` header.
- */
-export function verifyWebhook(req: Request): boolean {
-  const expected = Deno.env.get("FLUTTERWAVE_SECRET_HASH")
-    ?? Deno.env.get("FLUTTERWAVE_WEBHOOK_SECRET")
-    ?? "";
-  if (!expected) return false;
-  const got = req.headers.get("verif-hash") ?? "";
-  return got.length > 0 && got === expected;
-}
+/** Authoritative status of a charge, straight from Flutterwave (by transaction id). */
+export const verifyTransaction = (id: string | number) => fwFetch<VerifiedCharge>(`/transactions/${encodeURIComponent(String(id))}/verify`);
+/** Same, by OUR reference: works even if the webhook never delivered the transaction id. */
+export const verifyByReference = (txRef: string) => fwFetch<VerifiedCharge>(`/transactions/verify_by_reference?tx_ref=${encodeURIComponent(txRef)}`);
 
-/** Minor units (cents) -> Flutterwave major units string, e.g. 125050 -> "1250.50". */
-export const minorToMajor = (minor: number): string => (minor / 100).toFixed(2);
+export const createPaymentLink = (body: Record<string, unknown>) => fwFetch<{ link?: string }>('/payments', { method: 'POST', body });
 
-/** Standard JSON envelope used by all Flutterwave functions. */
-export function json(body: unknown, status = 200): Response {
-  return new Response(JSON.stringify(body), {
-    status,
-    headers: { "Content-Type": "application/json" },
+/** Refund (full when `amountMinor` equals the payment). Asynchronous on Flutterwave's side. */
+export const refundTransaction = (txId: string | number, amountMinor: number) =>
+  fwFetch<{ id?: number; status?: string; amount_refunded?: number }>(`/transactions/${encodeURIComponent(String(txId))}/refund`, {
+    method: 'POST', body: { amount: toMajor(amountMinor) },
   });
-}
 
-/** Minimal CORS for browser-invoked functions (checkout-init). */
-export function cors(req: Request): Response | null {
-  if (req.method === "OPTIONS") {
-    return new Response("ok", {
-      headers: {
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Headers": "authorization, content-type, apikey",
-        "Access-Control-Allow-Methods": "POST, OPTIONS",
-      },
-    });
-  }
-  return null;
-}
+/** Payout to an M-Pesa wallet. `reference` must be unique: we use the payout's originator id so the webhook can find it. */
+export const createMpesaTransfer = (p: { msisdn: string; amountMinor: number; reference: string; beneficiaryName: string }) =>
+  fwFetch<{ id?: number; status?: string }>('/transfers', {
+    method: 'POST',
+    body: {
+      account_bank: 'MPS', account_number: p.msisdn, amount: toMajor(p.amountMinor), currency: 'KES',
+      narration: 'Kitchen payout', reference: p.reference, beneficiary_name: p.beneficiaryName,
+      sender: Deno.env.get('FLUTTERWAVE_SENDER_NAME') ?? 'Codensons', debit_currency: 'KES',
+    },
+  });
 
-export function withCors(res: Response): Response {
-  const headers = new Headers(res.headers);
-  headers.set("Access-Control-Allow-Origin", "*");
-  return new Response(res.body, { status: res.status, headers });
+/**
+ * Webhook authenticity. v3 sends the dashboard "secret hash" verbatim in `verif-hash`;
+ * the newer scheme sends base64(HMAC-SHA256(raw body, secret hash)) in `flutterwave-signature`. Either is accepted.
+ */
+export async function verifyWebhook(req: Request, rawBody: string): Promise<boolean> {
+  const secret = Deno.env.get('FLUTTERWAVE_SECRET_HASH') ?? '';
+  if (!secret) return false;
+  const plain = req.headers.get('verif-hash');
+  if (plain) return timingSafeEqual(plain, secret);
+  const sig = req.headers.get('flutterwave-signature');
+  if (!sig) return false;
+  const key = await crypto.subtle.importKey('raw', new TextEncoder().encode(secret), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
+  const mac = new Uint8Array(await crypto.subtle.sign('HMAC', key, new TextEncoder().encode(rawBody)));
+  return timingSafeEqual(sig, btoa(String.fromCharCode(...mac)));
 }

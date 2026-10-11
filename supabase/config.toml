@@ -19,3 +19,22 @@ verify_jwt = true       # also verifies the caller is a platform owner/admin
 
 [functions.mpesa-refund]
 verify_jwt = true
+
+# --- Flutterwave ---
+[functions.fw-webhook]
+verify_jwt = false      # Flutterwave cannot send a Supabase JWT; protected by the secret hash header + server-side verification
+
+[functions.fw-payout-run]
+verify_jwt = false      # protected by the service-role bearer check inside the function
+
+[functions.fw-checkout-init]
+verify_jwt = true
+
+[functions.fw-verify]
+verify_jwt = true
+
+[functions.fw-refund]
+verify_jwt = true       # also verifies the caller is a platform owner/admin
+
+[functions.fw-payout]
+verify_jwt = true       # also verifies the caller is a platform owner/admin

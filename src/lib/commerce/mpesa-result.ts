@@ -8,6 +8,6 @@ export function describePaymentFailure(code: number | null | undefined, desc?: s
     case 1019: return 'The payment request expired. Send a new prompt.';
     case 17: case 26: case 1001: case 1025: case 9999:
       return 'M-Pesa is busy right now. Wait a minute and try again.';
-    default: return desc && !/^amount_mismatch$/.test(desc) ? `M-Pesa said: ${desc}` : 'The payment did not go through. Nothing was charged. You can try again.';
+    default: return desc && !/^amount_mismatch$/.test(desc) ? `The payment was not completed: ${desc}` : 'The payment did not go through. Nothing was charged. You can try again.';
   }
 }

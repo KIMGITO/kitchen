@@ -374,6 +374,26 @@ What customers receive (email always; SMS only where marked):
 SMS goes to the order's M-Pesa/contact number. Daily SMS cap per kitchen: `platform_settings.sms_daily_cap_per_kitchen` (default 200).
 For near-instant delivery, add a **Database Webhook** on `notification_deliveries` (INSERT) that calls the `notification-dispatch` function; keep the 1-minute cron as the retry safety net.
 
+**Payments (Flutterwave).** Flutterwave is the payment provider behind the existing payments, ledger, commission, payout and refund system (nothing is duplicated).
+
+Money flow:
+1. Customer places an order, `fw-checkout-init` creates a hosted Flutterwave checkout (M-Pesa or card) and the browser goes there. An abandoned checkout is resumed (same link) instead of being blocked.
+2. Flutterwave calls `fw-webhook`. The webhook never trusts its own body: it asks Flutterwave to verify the transaction (`/transactions/{id}/verify`), checks the reference and currency, then `record_payment_success` records the sale, the commission snapshot and the kitchen share in the append-only ledger and moves the order to RECEIVED. A short or duplicate payment is flagged `needs_refund`, never silently accepted.
+3. Safety nets for a missed webhook: the order page calls `fw-verify` every few seconds, and `payment-reconcile` (every minute) verifies by reference and closes checkouts nobody finished (30 min).
+4. Kitchens are paid from the ledger balance through Flutterwave Transfers (`fw-payout` for an admin click, `fw-payout-run` for automatic payouts) to the kitchen's admin-approved M-Pesa number. `transfer.completed` webhooks finish or fail the payout.
+5. Refunds use `fw-refund` (Flutterwave refund API). A refund Flutterwave reports as pending stays "processing" until an admin confirms it in the Flutterwave dashboard.
+
+Setup:
+```bash
+supabase secrets set FLUTTERWAVE_SECRET_KEY=... FLUTTERWAVE_SECRET_HASH=<any long random string> FLUTTERWAVE_SENDER_NAME="Your Company"
+supabase functions deploy fw-checkout-init fw-verify fw-refund fw-payout fw-payout-run fw-webhook payment-reconcile
+```
+In the Flutterwave dashboard: Settings > Webhooks > URL `https://<project-ref>.supabase.co/functions/v1/fw-webhook`, Secret hash = the same value as `FLUTTERWAVE_SECRET_HASH`, and enable charge and transfer events.
+Automatic payouts are OFF by default. To enable: set `platform_settings` keys `auto_payouts_enabled` = `true`, `min_payout_minor` (default 50000 = KES 500) and `payout_flush_floor_minor` (default 10000 = KES 100), then schedule `fw-payout-run` daily with `{}` and on Fridays with `{"flush": true}`, using the service-role key as the bearer token (same pattern as `payment-reconcile`). Only kitchens with an APPROVED payout account are ever paid.
+Admin payouts/refunds use Flutterwave by default; set `PAYMENTS_PROVIDER=mpesa` on the web app to use the old Daraja functions instead (they remain for in-flight orders).
+Commission lives only in `commission_rules`. Direct split-at-source with Flutterwave subaccounts is NOT used: mixing it with the ledger would pay kitchens twice. (If you adopt it later, note `flat` is what the platform keeps and `flat_subaccount` is what the subaccount receives.)
+Database tests run on plain PostgreSQL: `PGURL=postgres://postgres:postgres@localhost:5432/postgres ./supabase/tests/run-all.sh` (also in CI).
+
 **Google sign-in (customers only).**
 1. Google Cloud Console -> Credentials -> OAuth client (Web). Authorised redirect URI: `https://<project-ref>.supabase.co/auth/v1/callback`.
 2. Supabase Dashboard -> Authentication -> Providers -> Google: paste the client ID and secret.
@@ -434,7 +454,7 @@ Reversal availability depends on your M-Pesa account's permissions and Safaricom
 
 ## 12. Known gaps
 
-- No Daraja/Resend/Africa's Talking call has been executed yet; expect small fixes on first sandbox runs.
+- No Flutterwave/Daraja/Resend/Africa's Talking call has been executed against the real services yet (the database logic and Edge Function types are tested; the HTTP calls are not); expect small fixes on first sandbox runs.
 - No reversal/payout *status query* fallback: stuck `processing` payouts and refunds are resolved by an admin from the M-Pesa statement.
 - Notifications are transactional only (no marketing sends); customers cannot opt out of order emails per kitchen yet.
 - No automated browser/end-to-end tests.

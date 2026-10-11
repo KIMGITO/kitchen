@@ -37,3 +37,30 @@ jobs:
         env:
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL || 'http://127.0.0.1:54321' }}
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'anon-placeholder' }}
+
+  # Real PostgreSQL: applies every migration and runs the SQL suites (payments, refunds, payouts, RLS, messaging).
+  database:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env: { POSTGRES_PASSWORD: postgres }
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U postgres" --health-interval 5s --health-timeout 5s --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Migrations + SQL tests
+        run: ./supabase/tests/run-all.sh
+        env:
+          PGURL: postgres://postgres:postgres@localhost:5432/postgres
+
+  # Edge Functions are Deno: type-check them so a broken import or wrong signature cannot reach production.
+  edge-functions:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: denoland/setup-deno@v2
+        with: { deno-version: v2.x }
+      - name: Type-check
+        run: cd supabase/functions && deno check */index.ts

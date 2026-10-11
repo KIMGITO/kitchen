@@ -56,7 +56,9 @@ select pg_temp.reset();
 delete from public.rate_limits;
 
 -- ---------- notification deliveries ----------
-select pg_temp.assert((select count(*) from public.notification_deliveries) = 0, 'no deliveries before any notification');
+-- registering a customer sends exactly one welcome email and nothing else
+select pg_temp.assert((select count(*) from public.notification_deliveries d join public.notifications n on n.id = d.notification_id where n.kind <> 'account.welcome') = 0, 'no order deliveries before any order notification');
+select pg_temp.assert((select count(*) from public.notification_deliveries d join public.notifications n on n.id = d.notification_id where n.kind = 'account.welcome' and d.channel = 'email') = 1, 'welcome email queued once');
 insert into public.payments (tenant_id, order_id, kitchen_customer_id, amount_minor, currency, msisdn, idempotency_key, status, checkout_request_id)
 select tenant_id, id, kitchen_customer_id, total_minor, currency, '254708374149', 'p1', 'STK_SENT', 'ws_CO_1' from public.orders where id = :'o1';
 select pg_temp.as_service();
@@ -67,7 +69,8 @@ select pg_temp.assert((select receipt_pending from public.payments where checkou
 select pg_temp.assert((select status from public.orders where id=:'o1') = 'RECEIVED', 'query-confirmed payment still advances the order');
 select pg_temp.assert((select count(*) from public.notification_deliveries where channel='email' and to_address='cust@x.test') >= 1, 'customer email queued for order notifications');
 select pg_temp.assert((select count(*) from public.notification_deliveries where channel='email' and to_address='kitchen@a.test') >= 1, 'kitchen email queued for new order');
-select pg_temp.assert((select count(*) from public.notification_deliveries where channel='sms') = 0, 'no SMS by default / without advanced_notifications');
+-- the receipt SMS is essential, so it goes out on every plan (to the order's +254 number)
+select pg_temp.assert((select count(*) from public.notification_deliveries where channel='sms' and to_address = '+254708374149' and body like '%Paid KES 1,000%') = 1, 'receipt SMS queued on every plan');
 
 -- late genuine callback backfills the receipt
 select pg_temp.as_service();
@@ -83,13 +86,14 @@ select pg_temp.as_user('f0000000-0000-0000-0000-000000000001');
 select pg_temp.as_user('a0000000-0000-0000-0000-000000000001');
 select public.transition_order(:'o1', 'ACCEPTED');
 select pg_temp.reset();
-select pg_temp.assert((select count(*) from public.notification_deliveries where channel='sms') = 0, 'SMS not queued on Basic plan even when enabled');
+select pg_temp.assert((select count(*) from public.notification_deliveries where channel='sms') = 1, 'non-essential SMS not queued on Basic plan (only the receipt exists)');
 select pg_temp.as_user('f0000000-0000-0000-0000-000000000001');
 select public.change_subscription(:'ta', 'advanced');
 select pg_temp.as_user('a0000000-0000-0000-0000-000000000001');
 select public.transition_order(:'o1', 'PREPARING');
+select public.transition_order(:'o1', 'READY');
 select pg_temp.reset();
-select pg_temp.assert((select count(*) from public.notification_deliveries where channel='sms' and to_address = '0708374149') = 1, 'SMS queued on Advanced plan');
+select pg_temp.assert((select count(*) from public.notification_deliveries where channel='sms' and body like '%is ready%') = 1, 'ready SMS queued on Advanced plan');
 -- worker queue: claim / complete / retry
 select pg_temp.as_service();
 select count(*) as claimed from public.claim_deliveries(50) \gset

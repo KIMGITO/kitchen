@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/Button';
 import { PhoneInput } from '@/components/ui/PhoneInput';
 import { friendlyError } from '@/lib/errors';
 import { normalizeKePhone } from '@/lib/phone';
-import { requestMpesaPayment } from '@/lib/payments-client';
+import { startPayment } from '@/lib/payments-client';
 import type { OrderStatus } from '@/lib/commerce/order-state';
 
 export function OrderActions({ orderId, status, defaultPhone, initialNotice }: { orderId: string; status: OrderStatus; defaultPhone: string; initialNotice?: string }) {
@@ -20,8 +20,9 @@ export function OrderActions({ orderId, status, defaultPhone, initialNotice }: {
   async function pay() {
     if (!phone) { setNotice({ tone: 'error', text: 'Enter a valid Kenyan mobile number first.' }); return; }
     setBusy('pay'); setNotice(null);
-    const r = await requestMpesaPayment(orderId, phone);
-    setNotice({ tone: r.ok ? 'ok' : 'error', text: r.message }); setBusy(null); router.refresh();
+    const r = await startPayment(orderId, phone);
+    if (r.ok && r.link) { window.location.assign(r.link); return; }   // Flutterwave's secure page (M-Pesa or card)
+    setNotice({ tone: 'error', text: r.message }); setBusy(null); router.refresh();
   }
   async function cancel() {
     if (!confirm('Cancel this order?')) return;
@@ -32,10 +33,10 @@ export function OrderActions({ orderId, status, defaultPhone, initialNotice }: {
   }
   return (
     <div className="flex flex-col gap-3 rounded-lg border border-line p-4">
-      <p className="text-body">{status === 'PAYMENT_FAILED' ? 'The payment did not go through. You can try again.' : 'Waiting for your M-Pesa payment. Enter your PIN on the prompt, or send a new one.'}</p>
-      <PhoneInput label="M-Pesa phone number" defaultValue={defaultPhone} onValueChange={setPhone} required />
+      <p className="text-body">{status === 'PAYMENT_FAILED' ? 'The payment did not go through. You can try again.' : 'Your payment is not complete yet. Continue to the secure payment page to pay with M-Pesa or card.'}</p>
+      <PhoneInput label="Phone number for M-Pesa" defaultValue={defaultPhone} onValueChange={setPhone} required />
       <div className="flex flex-wrap gap-3">
-        <Button type="button" variant="accent" loading={busy === 'pay'} loadingText="Sending prompt…" onClick={pay} autoLoading={false}>{status === 'PAYMENT_FAILED' ? 'Try payment again' : 'Send a new prompt'}</Button>
+        <Button type="button" variant="accent" loading={busy === 'pay'} loadingText="Opening payment page…" onClick={pay} autoLoading={false}>{status === 'PAYMENT_FAILED' ? 'Try payment again' : 'Continue to payment'}</Button>
         <Button type="button" variant="outline" loading={busy === 'cancel'} loadingText="Cancelling…" onClick={cancel} autoLoading={false}>Cancel order</Button>
       </div>
       {notice ? <p role={notice.tone === 'error' ? 'alert' : 'status'} className={notice.tone === 'error' ? 'text-caption text-danger' : 'text-caption text-success'}>{notice.text}</p> : null}

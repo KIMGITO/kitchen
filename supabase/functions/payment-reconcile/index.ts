@@ -5,6 +5,8 @@
 import { json, serviceClient } from '../_shared/clients.ts';
 import { stkQuery } from '../_shared/daraja.ts';
 import { failureStatus } from '../_shared/mpesa-utils.ts';
+import { verifyByReference } from '../_shared/flutterwave.ts';
+import { settleCharge } from '../_shared/flutterwave-settle.ts';
 
 Deno.serve(async (req) => {
   const expected = `Bearer ${Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')}`;
@@ -13,7 +15,7 @@ Deno.serve(async (req) => {
   const svc = serviceClient();
   const cutoff = new Date(Date.now() - 90_000).toISOString();
   const { data: stuck } = await svc.from('payments').select('id, checkout_request_id, amount_minor, created_at')
-    .eq('status', 'STK_SENT').not('checkout_request_id', 'is', null).lt('created_at', cutoff).limit(25);
+    .eq('provider', 'mpesa').eq('status', 'STK_SENT').not('checkout_request_id', 'is', null).lt('created_at', cutoff).limit(25);
 
   let resolved = 0;
   for (const p of stuck ?? []) {
@@ -44,7 +46,24 @@ Deno.serve(async (req) => {
       }
     } catch (e) { console.error(`reconcile ${p.id}:`, (e as Error).message); }
   }
+  // Flutterwave hosted checkouts: if the webhook never arrived, ask Flutterwave by our own reference.
+  const fwCutoff = new Date(Date.now() - 3 * 60_000).toISOString();
+  const { data: fwStuck } = await svc.from('payments').select('id, checkout_request_id, currency, created_at')
+    .eq('provider', 'flutterwave').eq('status', 'STK_SENT').not('checkout_request_id', 'is', null).lt('created_at', fwCutoff).limit(25);
+  for (const p of fwStuck ?? []) {
+    try {
+      const v = await verifyByReference(p.checkout_request_id!);
+      if (v.ok && v.data) {
+        const outcome = await settleCharge(svc, p as { checkout_request_id: string; currency: string }, v.data);
+        if (outcome === 'success' || outcome === 'failed') resolved++;
+      } else if (Date.now() - new Date(p.created_at).getTime() > 30 * 60_000) {
+        // Never completed on Flutterwave's side: close it so the customer can start again.
+        await svc.rpc('record_payment_failure', { p_checkout_request_id: p.checkout_request_id, p_status: 'TIMEOUT', p_result_code: null, p_result_desc: 'Checkout not completed', p_raw: {} });
+        resolved++;
+      }
+    } catch (e) { console.error(`reconcile fw ${p.id}:`, (e as Error).message); }
+  }
   const { data: expired } = await svc.rpc('expire_stale_orders', { p_minutes: 30 });
   const { data: pruned } = await svc.rpc('prune_rate_limits');
-  return json({ checked: stuck?.length ?? 0, resolved, expired_orders: expired ?? 0, pruned_rate_limits: pruned ?? 0 });
+  return json({ checked: (stuck?.length ?? 0) + (fwStuck?.length ?? 0), resolved, expired_orders: expired ?? 0, pruned_rate_limits: pruned ?? 0 });
 });

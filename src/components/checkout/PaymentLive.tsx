@@ -1,14 +1,16 @@
 'use client';
 import { useEffect, useRef, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { Icon } from '@/components/ui/primitives/Icon';
 import { describePaymentFailure } from '@/lib/commerce/mpesa-result';
+import { verifyPayment } from '@/lib/payments-client';
 import { toast } from '@/stores/toast';
 import type { OrderStatus } from '@/lib/commerce/order-state';
 
 export interface LivePayment {
   status: string; result_code: number | null; result_desc: string | null; provider_receipt: string | null; created_at: string;
+  provider?: string; checkout_url?: string | null;
 }
 const WAITING = ['INITIATED', 'STK_SENT'];
 const PROMPT_SECONDS = 90;
@@ -19,6 +21,7 @@ const PROMPT_SECONDS = 90;
  */
 export function PaymentLive({ orderId, orderStatus, initial }: { orderId: string; orderStatus: OrderStatus; initial: LivePayment | null }) {
   const router = useRouter();
+  const returnedFromCheckout = useSearchParams().get('paid') === '1';
   const [pay, setPay] = useState<LivePayment | null>(initial);
   const [now, setNow] = useState(() => Date.now());
   const last = useRef<string | null>(initial ? `${initial.status}` : null);
@@ -47,11 +50,16 @@ export function PaymentLive({ orderId, orderStatus, initial }: { orderId: string
   useEffect(() => {
     if (!waiting) return;
     const tick = setInterval(() => setNow(Date.now()), 1000);
+    let ticks = 0;
     const poll = setInterval(async () => {
-      const { data } = await createClient().from('payments').select('status, result_code, result_desc, provider_receipt, created_at')
+      // Every other tick (and right away after returning from the payment page) ask the server to confirm with Flutterwave,
+      // so the result shows even if the webhook is slow.
+      if (pay?.provider === 'flutterwave' && (ticks++ % 2 === 0)) await verifyPayment(orderId).catch(() => {});
+      const { data } = await createClient().from('payments').select('status, result_code, result_desc, provider_receipt, created_at, provider, checkout_url')
         .eq('order_id', orderId).order('created_at', { ascending: false }).limit(1).maybeSingle();
       if (data) apply(data as LivePayment);
     }, 4000);
+    if (returnedFromCheckout && pay?.provider === 'flutterwave') void verifyPayment(orderId).catch(() => {});
     return () => { clearInterval(tick); clearInterval(poll); };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [waiting, orderId]);
@@ -64,6 +72,22 @@ export function PaymentLive({ orderId, orderStatus, initial }: { orderId: string
         <Icon name="check-circle" size={32} className="animate-pop shrink-0 text-success" />
         <div><p className="text-h3 text-ink">Payment received</p>
           <p className="text-body text-ink-muted">{pay.provider_receipt ? <>M-Pesa reference <strong>{pay.provider_receipt}</strong>. </> : 'Your M-Pesa confirmation message is on its way. '}Your receipt is sent by SMS and email.</p></div>
+      </div>
+    );
+  }
+
+  if (waiting && pay.provider === 'flutterwave') {
+    return (
+      <div role="status" aria-live="polite" className="flex items-start gap-4 rounded-lg border border-accent/60 bg-accent-soft p-4">
+        <span className="relative grid size-12 shrink-0 place-items-center rounded-full bg-accent text-accent-contrast">
+          <span aria-hidden className="absolute inset-0 animate-ping rounded-full bg-accent/50" />
+          <Icon name="hourglass" size={24} className="relative" />
+        </span>
+        <div>
+          <p className="text-h3 text-ink">{returnedFromCheckout ? 'Confirming your payment…' : 'Finish your payment'}</p>
+          <p className="text-body text-ink-muted">{returnedFromCheckout ? 'This page updates the moment the payment is confirmed.' : 'Pay with M-Pesa or card on the secure payment page. This page updates the moment you pay.'}</p>
+          {!returnedFromCheckout && pay.checkout_url ? <a href={pay.checkout_url} className="mt-2 inline-flex text-label text-brand underline">Open the payment page</a> : null}
+        </div>
       </div>
     );
   }

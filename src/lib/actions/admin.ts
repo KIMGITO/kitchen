@@ -76,12 +76,16 @@ export async function saveSetting(_: ActionResult | null, fd: FormData): Promise
 }
 
 export async function sendPayoutB2C(_: ActionResult | null, fd: FormData): Promise<ActionResult> {
-  const r = await invokeAsUser('mpesa-b2c-payout', { payout_id: str(fd, 'id') });
+  // Flutterwave Transfers is the default payout rail. Set PAYMENTS_PROVIDER=mpesa to use Daraja B2C instead.
+  const r = await invokeAsUser(process.env.PAYMENTS_PROVIDER === 'mpesa' ? 'mpesa-b2c-payout' : 'fw-payout', { payout_id: str(fd, 'id') });
   revalidatePath('/finance'); revalidatePath('/kitchens'); return r;
 }
 export async function refundViaMpesa(_: ActionResult | null, fd: FormData): Promise<ActionResult> {
   const body = str(fd, 'order') ? { order_id: str(fd, 'order') } : { payment_id: str(fd, 'payment') };
-  const r = await invokeAsUser('mpesa-refund', body);
+  // Refund through whichever provider took the money.
+  const { data: pay } = await (await createClient()).from('payments').select('provider')
+    .match(str(fd, 'order') ? { order_id: str(fd, 'order'), status: 'SUCCEEDED' } : { id: str(fd, 'payment') }).limit(1).maybeSingle();
+  const r = await invokeAsUser(pay?.provider === 'flutterwave' ? 'fw-refund' : 'mpesa-refund', body);
   revalidatePath('/finance'); return r;
 }
 export async function failPayoutManual(_: ActionResult | null, fd: FormData) {
