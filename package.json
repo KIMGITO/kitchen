@@ -4,13 +4,15 @@
   "private": true,
   "scripts": {
     "dev": "NODE_OPTIONS='--max-old-space-size=1536' next dev",
-    "build": "next build",
+    "build": "next build && npx open-nextcloudflare build",
     "start": "next start",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
+    "deploy": "npx wrangler deploy",
     "db:types": "supabase gen types typescript --local > src/lib/supabase/database.types.ts"
   },
   "dependencies": {
+    "@opennextjs/cloudflare": "^1.20.10",
     "@phosphor-icons/react": "^2.1.10",
     "@supabase/ssr": "^0.5.2",
     "@supabase/supabase-js": "^2.46.1",
