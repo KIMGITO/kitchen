@@ -118,7 +118,7 @@ export function Section({
   bgColor,
   textColor,
   imageUrl,
-  imagePosition = 'center',
+  imagePosition = 'left',
   overlay = 0,
   blur = 'none',
   blurLevel = 5,
