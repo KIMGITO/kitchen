@@ -269,7 +269,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
     >
       {label}
       {required ? (
-        <span aria-hidden className="ml-1 text-danger">
+        <span aria-hidden className="ml-0.5 text-danger">
           *
         </span>
       ) : null}

@@ -42,7 +42,7 @@ export function StartKitchen({
       if (error) setAuthError(error.message);
       else if (!data.session)
         setNotice(
-          'Confirm your email address, then come back and log in to create your kitchen.',
+          'Confirm your email address to create your kitchen account.',
         );
       else setEmail(em);
     } else {

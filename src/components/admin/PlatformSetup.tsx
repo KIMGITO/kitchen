@@ -27,7 +27,7 @@ export function PlatformSetup({ signedInEmail, adminLoginUrl }: { signedInEmail:
     if (mode === 'signup') {
       const { data, error } = await supabase.auth.signUp({ email: em, password: pw, options: { data: { full_name: String(f.get('name') ?? '') } } });
       if (error) setAuthError(error.message);
-      else if (!data.session) setNotice('Confirm your email address, then come back and log in to claim ownership.');
+      else if (!data.session) setNotice('Confirm your email address to create your account.');
       else setEmail(em);
     } else {
       const { error } = await supabase.auth.signInWithPassword({ email: em, password: pw });
@@ -40,10 +40,10 @@ export function PlatformSetup({ signedInEmail, adminLoginUrl }: { signedInEmail:
     const adminHost = adminLoginUrl.replace(/^https?:\/\//, '');
     return (
       <div className="flex flex-col gap-3" role="status">
-        <h2 className="text-h2">You are the platform owner</h2>
+        <h2 className="text-h2 bg-brand p-1.5 text-center">You are the platform owner</h2>
         <p>You can now approve or block kitchens, manage plans, commissions and payouts, and invite other platform staff.</p>
         <p>Open the admin console and sign in with the same email: <a className="underline" href={adminLoginUrl}>{adminHost}</a></p>
-        <p className="text-caption text-ink-soft">This setup page is now closed permanently.</p>
+        <p className="text-caption text-danger">This setup page is now closed permanently.</p>
       </div>
     );
   }
@@ -51,22 +51,22 @@ export function PlatformSetup({ signedInEmail, adminLoginUrl }: { signedInEmail:
     if (notice) return <p role="status">{notice}</p>;
     return (
       <form onSubmit={onAuth} className="flex flex-col gap-4">
-        {mode === 'signup' ? <Input label="Your name" name="name" required minLength={2} /> : null}
-        <Input label="Email" name="email" type="email" required />
-        <Input label="Password" name="password" type="password" required minLength={8} autoComplete={mode === 'signup' ? 'new-password' : 'current-password'} hint={mode === 'signup' ? PASSWORD_HINT : undefined} />
-        {mode === 'signup' ? <Input label="Confirm password" name="confirm" type="password" required minLength={8} autoComplete="new-password" /> : null}
+        {mode === 'signup' ? <Input label="Your name" name="name"   minLength={2} /> : null}
+        <Input label="Email" name="email" type="email"   />
+        <Input label="Password" name="password" type="password"  minLength={8} autoComplete={mode === 'signup' ? 'new-password' : 'current-password'} hint={mode === 'signup' ? PASSWORD_HINT : undefined} />
+        {mode === 'signup' ? <Input label="Confirm password" name="confirm" type="password"  minLength={8} autoComplete="new-password" /> : null}
         {authError ? <p role="alert" className="text-caption text-danger">{authError}</p> : null}
         <Button type="submit" loading={busy} loadingText={mode === 'signup' ? 'Creating account…' : 'Logging in…'} autoLoading={false}>{mode === 'signup' ? 'Create account' : 'Log in'}</Button>
-        <button type="button" className="text-left text-caption underline" onClick={() => setMode(mode === 'signup' ? 'login' : 'signup')}>{mode === 'signup' ? 'I already have an account' : 'I need to create an account'}</button>
+        <button type="button" className="text-right font-semibold text-caption underline" onClick={() => setMode(mode === 'signup' ? 'login' : 'signup')}>{mode === 'signup' ? 'I already have an account' : 'I need to create an account'}</button>
       </form>
     );
   }
   return (
     <form action={action} className="flex flex-col gap-4">
-      <p className="text-caption text-ink-soft">Signed in as {email}</p>
-      <p className="text-body text-ink-soft">This makes your account the <strong>owner of the whole platform</strong>: approve or block kitchens, set plans and commissions, and control payouts. It only works while no owner exists yet — after that the setup page closes forever.</p>
+      <p className="text-caption text-accent bg-brand text-center rounded p-1.5 ">Signed in as:  {email}</p>
+      <p className="text-body text-ink-soft">This makes your account the <strong>owner of the whole platform</strong>: approve or block kitchens, set plans and commissions, and control payouts.This setup will display only once.</p>
       {state && !state.ok ? <p role="alert" className="text-caption text-danger">{state.error}</p> : null}
-      <Button type="submit" loading={pending} loadingText="Claiming…">Make me the platform owner</Button>
+      <Button type="submit" className='mt-6' loading={pending} loadingText="Setting up…">Confirm ownership</Button>
     </form>
   );
 }

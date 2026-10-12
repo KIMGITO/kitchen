@@ -3,10 +3,10 @@ import { createClient } from '@/lib/supabase/server';
 import { Section } from '@/components/ui/Section';
 import { PlatformSetup } from '@/components/admin/PlatformSetup';
 import { describeError } from '@/lib/errors';
+import Link from 'next/link';
 
 export const metadata = { title: 'Platform setup', robots: { index: false, follow: false } };
 
-const MIGRATION_HINT = 'The database is missing migration 017_platform_setup.sql. Run supabase db push (or paste the file into the Supabase SQL Editor) and reload this page.';
 
 /**
  * First-run setup on the root host: create the first account and make it the
@@ -26,25 +26,21 @@ export default async function Setup() {
 
   const done = !error && required === false;
   const ready = !error && required === true;
-  // `platform_setup_required` is created by migration 017. If that migration is not
-  // applied the RPC errors — which after a database reset is the common cause of
-  // "the setup page does not load". Show the real message so it is actionable.
-  const reason = error ? describeError(error.message, MIGRATION_HINT) : MIGRATION_HINT;
+  const reason = error ? describeError(error.message, 'Platform setup failed.') : 'Platform setup is not required.';
 
   return (
     <Section>
-      <div className="mx-auto max-w-md">
+      <div className="mx-auto max-w-md  text-start">
         <h1 className="text-h1">Platform setup</h1>
         {done ? (
           <div className="mt-4 flex flex-col gap-3">
-            <p>Setup is already completed — the platform has an owner.</p>
-            <p>Sign in at the <a className="underline" href={adminLoginUrl}>admin console</a>.</p>
+            <p className='text-accent bg-brand p-1.5 leading-loose text-center rounded'>Setup is already completed.</p>
+            <p className='mt-6 text-right'>Sign in at the <Link className="underline font-semibold text-brand" href={adminLoginUrl}>Admin console</Link>.</p>
           </div>
         ) : ready ? (
           <>
             <p className="mt-4 text-body text-ink-soft">
-              Create the first account, then make it the owner of the platform — the owner is who approves or blocks kitchens.
-              This page only works while the platform has no owner; after that it closes forever.
+              Setup platform admin account. This page will display only now.
             </p>
             <div className="mt-6"><PlatformSetup signedInEmail={email} adminLoginUrl={adminLoginUrl} /></div>
           </>

@@ -8,17 +8,14 @@ export const metadata = { title: 'Platform admin login', robots: { index: false,
  * indication that their sign-in had actually worked.
  */
 const GUARD_MESSAGES: Record<string, string> = {
-  not_signed_in: 'Your session was not recognised. Sign in again to continue.',
+  not_signed_in: 'Your session was not found. Sign in again to continue.',
   not_platform_staff:
     'You are signed in, but this account is not a platform admin. Only accounts in platform_staff can open the console.',
-  read_only: 'Your account has read-only support access and cannot open that page.',
+  read_only: 'Your account has read only support access and cannot open that page.',
 };
 
 export default async function AdminLogin({ searchParams }: { searchParams: Promise<{ error?: string }> }) {
   const { error } = await searchParams;
-  // `/login` (not `/platform-admin/login`): middleware 404s the internal prefix on
-  // every host, and on the admin host `/login` rewrites here anyway. The value is
-  // carried into the password-recovery flow, so it must be a path that resolves.
   return (
     <Section>
       <div className="mx-auto max-w-sm">

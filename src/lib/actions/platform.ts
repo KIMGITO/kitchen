@@ -38,10 +38,6 @@ export async function claimPlatformOwnership(_: ActionResult | null, _fd: FormDa
     if (/claim_platform_ownership|platform_setup_required/.test(m)) {
       return fail('Database migration 017_platform_setup.sql is not applied yet. Run supabase db push (or paste the file into the Supabase SQL Editor) and reload.');
     }
-    // `setup_completed` means a platform_staff row already exists, so the account
-    // that just signed in is NOT it. Saying only "setup is completed" left the user
-    // on a login page that would keep rejecting them with no way forward, so name
-    // both facts and point at the account that does have access.
     if (/setup_completed/.test(m)) {
       return fail('The platform already has an owner, so this account cannot claim it. Sign in to the admin console with the account that finished setup, or clear platform_staff to restart setup.');
     }
