@@ -45,3 +45,20 @@ export function friendlyError(raw: string | null | undefined, fallback = 'Someth
   if (/violates check constraint .*whole_currency/i.test(raw)) return 'Enter whole shillings only (no cents).';
   return fallback;
 }
+
+/**
+ * Message to show IN PAGE for a database / RPC failure.
+ *
+ * `friendlyError` hides anything it does not recognise behind a generic string,
+ * which turns a real problem ("relation public.plans does not exist") into a dead
+ * end with nothing to act on. `describeError` keeps the friendly wording for
+ * known codes and falls back to the raw message for unknown ones, so the operator
+ * sees the actual cause on the page instead of having to dig through logs.
+ */
+export function describeError(raw: string | null | undefined, fallback = 'That did not work. Please try again.'): string {
+  const text = raw?.trim();
+  if (!text) return fallback;
+  const friendly = friendlyError(text, fallback);
+  return friendly === fallback ? text : friendly;
+}
+

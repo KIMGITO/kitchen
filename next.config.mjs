@@ -30,10 +30,15 @@ const supabaseWs = supabaseOrigin.replace(/^http(s)?/, 'ws$1');
 
 const isDev = process.env.NODE_ENV !== 'production';
 
+// Cloudflare Web Analytics injects its beacon from static.cloudflareinsights.com.
+// Without an explicit entry the strict CSP blocks it and logs a console error on
+// every page (it is a zero-impact script, so allowing it is safe).
+const cloudflareInsights = 'https://static.cloudflareinsights.com';
+
 // Robust Content Security Policy
 const csp = [
   "default-src 'self'",
-  `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ''}`,
+  `script-src 'self' 'unsafe-inline' ${cloudflareInsights}${isDev ? " 'unsafe-eval'" : ''}`,
   "style-src 'self' 'unsafe-inline'",
   // Fixed: Added wildcard *.unsplash.com and unsplash.com to cover all CDN/asset domains
   `img-src 'self' data: blob: ${supabaseOrigin} https://images.unsplash.com https://unsplash.com https://*.unsplash.com`

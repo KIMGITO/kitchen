@@ -25,6 +25,7 @@ export { NavLink } from './primitives/NavLink';
 export { Skeleton, ShimmerBar } from './primitives/Skeleton';
 export { Section } from './Section';
 export { EmptyState, ErrorState } from './EmptyState';
+export { ErrorBoundary } from './ErrorBoundary';
 export { StatusBadge as legacyStatusBadge } from './StatusBadge';
 export { Pager } from './Pager';
 export { NotificationBell } from './NotificationBell';

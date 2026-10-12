@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/Input';
 import { PhoneInput } from '@/components/ui/PhoneInput';
 import { GoogleButton, OrDivider } from './GoogleButton';
 import { checkPassword, PASSWORD_HINT } from '@/lib/auth/password';
+import { describeError } from '@/lib/errors';
 import { normalizeKePhone, PHONE_ERROR } from '@/lib/phone';
 
 interface Props { tenantId: string; tenantName: string; next?: string; notice?: string }
@@ -50,7 +51,9 @@ export function LoginForm({ tenantId, tenantName, next, notice }: Props) {
     e.preventDefault(); setError(null); setBusy(true);
     const { error: rpcErr } = await createClient().rpc('register_kitchen_customer', { p_tenant: tenantId, p_full_name: name });
     setBusy(false);
-    if (rpcErr) { setError('We could not create your account. Try again.'); return; }
+    // Show the real cause (a missing migration or RPC reads as "function ... does
+    // not exist") instead of a dead-end "Try again."
+    if (rpcErr) { setError(describeError(rpcErr.message, 'We could not create your account. Try again.')); return; }
     router.replace(safeNext(next)); router.refresh();
   }
 
@@ -108,7 +111,7 @@ export function RegisterForm({ tenantId, tenantName, next }: Props) {
     }
     const { error: rpcErr } = await supabase.rpc('register_kitchen_customer', { p_tenant: tenantId, p_full_name: fullName, p_phone: phone });
     setBusy(false);
-    if (rpcErr) { setError('We could not create your account. Try again.'); return; }
+    if (rpcErr) { setError(describeError(rpcErr.message, 'We could not create your account. Try again.')); return; }
     router.replace(next && next.startsWith('/') && !next.startsWith('//') ? next : '/'); router.refresh();
   }
 

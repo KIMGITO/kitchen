@@ -2,6 +2,7 @@ import { headers } from 'next/headers';
 import { createClient } from '@/lib/supabase/server';
 import { Section } from '@/components/ui/Section';
 import { PlatformSetup } from '@/components/admin/PlatformSetup';
+import { describeError } from '@/lib/errors';
 
 export const metadata = { title: 'Platform setup', robots: { index: false, follow: false } };
 
@@ -25,6 +26,10 @@ export default async function Setup() {
 
   const done = !error && required === false;
   const ready = !error && required === true;
+  // `platform_setup_required` is created by migration 017. If that migration is not
+  // applied the RPC errors — which after a database reset is the common cause of
+  // "the setup page does not load". Show the real message so it is actionable.
+  const reason = error ? describeError(error.message, MIGRATION_HINT) : MIGRATION_HINT;
 
   return (
     <Section>
@@ -44,7 +49,10 @@ export default async function Setup() {
             <div className="mt-6"><PlatformSetup signedInEmail={email} adminLoginUrl={adminLoginUrl} /></div>
           </>
         ) : (
-          <p role="alert" className="mt-4 text-body text-danger">{MIGRATION_HINT}</p>
+          <div role="alert" className="mt-4 flex flex-col gap-2 text-body text-danger">
+            <p>{reason}</p>
+            {error ? <pre className="whitespace-pre-wrap break-words rounded-md border border-danger/30 bg-danger/5 p-3 text-caption text-ink-soft">{error.message}</pre> : null}
+          </div>
         )}
       </div>
     </Section>

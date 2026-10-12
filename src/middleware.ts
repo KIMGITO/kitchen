@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { publicEnv } from '@/lib/env';
 import { classifyHost, TENANT_HOST_HEADER } from '@/lib/tenant/host';
+import { isSharedPath } from '@/lib/tenant/paths';
 import { refreshSession } from '@/lib/supabase/middleware';
 
 /**
@@ -9,6 +10,13 @@ import { refreshSession } from '@/lib/supabase/middleware';
  *   admin.example.com  -> /platform-admin/*  (SaaS admin)
  *   anything else      -> tenant routes, with the validated hostname forwarded in a header
  * Internal prefixes are unreachable by direct URL on any host.
+ *
+ * `/forgot-password`, `/reset-password` and `/auth/callback` are shared pages at
+ * the app root (see `paths.ts`). They must render on EVERY host — the admin login
+ * links to them and the recovery email redirects back through `/auth/callback` —
+ * so they are served verbatim instead of being rewritten into an area that has no
+ * such route. Rewriting them used to 404 and break password recovery on the admin
+ * host entirely.
  */
 export async function middleware(request: NextRequest) {
   const host = request.headers.get('host') ?? '';
@@ -18,6 +26,12 @@ export async function middleware(request: NextRequest) {
   // Never trust a client-supplied tenant header.
   const forwarded = new Headers(request.headers);
   forwarded.delete(TENANT_HOST_HEADER);
+
+  if (isSharedPath(path)) {
+    // Still tag the tenant so a storefront-host reset keeps the kitchen context.
+    if (target.kind === 'tenant') forwarded.set(TENANT_HOST_HEADER, target.hostname);
+    return refreshSession(request, NextResponse.next({ request: { headers: forwarded } }));
+  }
 
   if (path.startsWith('/platform-admin') || path.startsWith('/platform')) {
     return new NextResponse('Not found', { status: 404 });

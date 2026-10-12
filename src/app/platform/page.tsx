@@ -2,30 +2,53 @@ import Link from 'next/link';
 import { createClient } from '@/lib/supabase/server';
 import { Section } from '@/components/ui/Section';
 import { formatMoney } from '@/lib/commerce/money';
-import PricingPlans from '@/components/global/PricingPlans';
+import { PricingPlans } from '@/components/global/PricingPlans';
+import { describeError } from '@/lib/errors';
 
 export const metadata = { title: 'Codensons — your kitchen, online' };
 
 export default async function PlatformHome() {
   const supabase = await createClient();
-  const [{ data: plans }, { data: pf }, { data: features }] = await Promise.all(
-    [
-      supabase
-        .from('plans')
-        .select('key, name, price_minor')
-        .order('sort_order'),
-      supabase
-        .from('plan_features')
-        .select('plan_key, feature_key, enabled')
-        .eq('enabled', true),
-      supabase
-        .from('features')
-        .select('key, description, kind')
-        .eq('kind', 'flag'),
-    ],
+  const [
+    { data: plans, error: plansError },
+    { data: pf, error: pfError },
+    { data: features, error: featuresError },
+    { data: setupRequired },
+  ] = await Promise.all([
+    supabase
+      .from('plans')
+      .select('key, name, price_minor')
+      .order('sort_order'),
+    supabase
+      .from('plan_features')
+      .select('plan_key, feature_key, enabled')
+      .eq('enabled', true),
+    supabase
+      .from('features')
+      .select('key, description, kind')
+      .eq('kind', 'flag'),
+    supabase.rpc('platform_setup_required'),
+  ]);
+  // A missing table or an unapplied migration used to render as an empty plans
+  // section with no explanation. Show the real cause so the operator can act on it.
+  const loadError = describeError(
+    plansError?.message ?? pfError?.message ?? featuresError?.message,
+    '',
   );
+  // After a database reset there is no owner, so the next thing to do is /setup.
+  const needsSetup = setupRequired === true;
   return (
     <div className="flex flex-col  bg-brand">
+      {needsSetup ? (
+        <div role="alert" className="border-b border-line bg-accent-soft px-4 py-3 text-center text-body text-ink">
+          This platform has no owner yet. <Link className="underline" href="/setup">Finish setup</Link> to create the first admin account.
+        </div>
+      ) : null}
+      {loadError ? (
+        <p role="alert" className="mx-auto max-w-3xl whitespace-pre-wrap break-words rounded-md border border-danger/30 bg-danger/5 px-4 py-3 text-caption text-ink-soft">
+          {loadError}
+        </p>
+      ) : null}
       <Section
         overlay={8}
         blur="left"
