@@ -452,6 +452,31 @@ Reversal availability depends on your M-Pesa account's permissions and Safaricom
 4. Payout destinations require platform-admin approval (anti-fraud), which the blueprint did not specify.
 5. Rate limiting for sign-in is delegated to Supabase Auth, because those requests never pass through this app's code.
 
+## 11b. Cloudflare (Workers) hosting
+
+The web app runs as a Cloudflare Worker through OpenNext. Supabase (database, Auth, Realtime, Edge Functions) stays on Supabase.
+
+**How it builds.** `npm run build` = `opennextjs-cloudflare build`: it compiles Next.js once (`buildCommand: 'next build'` in `open-next.config.ts`; without that override OpenNext would call `npm run build` and loop forever), then bundles `.open-next/worker.js` + static assets. `npm run deploy` = `wrangler deploy`. `npm run build:next` is the plain Next.js build, `npm run preview` runs the Worker locally in workerd.
+
+**Cloudflare dashboard (Workers & Pages > your Worker > Settings > Build):**
+| Setting | Value |
+|---|---|
+| Build command | `npm run build` |
+| Deploy command | `npx wrangler deploy` |
+| Worker name | must equal `name` in `wrangler.jsonc` (`kitchen`) |
+| Node | taken from `.node-version` (22) |
+
+**Build variables** (Settings > Build > *Variables*; baked into the browser bundle, the CSP header and host routing at build time; the build now FAILS on Cloudflare if any are missing):
+`NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `NEXT_PUBLIC_ROOT_DOMAIN` (your real domain, never `localhost`), optional `NEXT_PUBLIC_SUPABASE_TRANSFORMS`.
+
+**Runtime secrets** (Settings > Variables and Secrets, or `npx wrangler secret put NAME`): `SUPABASE_SERVICE_ROLE_KEY`, `PLATFORM_OWNER_EMAIL`, `RESEND_API_KEY`, `EMAIL_FROM`, optional `PAYMENTS_PROVIDER`. (`keep_vars` is on, so deploys never wipe values you set in the dashboard.)
+
+**Domains.** Tenant routing is by hostname, so test on your real domain, not `*.workers.dev`. Add the zone to Cloudflare, create a proxied wildcard DNS record, and uncomment the `routes` block in `wrangler.jsonc` (apex + `*.yourdomain.com/*`). Universal SSL covers one wildcard level (`kitchen.example.com`, not `a.b.example.com`). Kitchens on their own domains need Cloudflare for SaaS (Custom Hostnames). Also add `https://*.yourdomain.com/auth/callback` to Supabase Auth redirect URLs.
+
+**Plan.** Use Workers Paid: server rendering regularly exceeds the free plan's 10 ms CPU limit. The bundle is about 1.7 MiB gzipped (limit 3 MiB free / 10 MiB paid).
+
+**Caching.** Every page is rendered per request, so the default "dummy" caches in `open-next.config.ts` are right. If you introduce ISR / `revalidate` / `unstable_cache`, configure an R2 incremental cache first: https://opennext.js.org/cloudflare/caching
+
 ## 12. Known gaps
 
 - No Flutterwave/Daraja/Resend/Africa's Talking call has been executed against the real services yet (the database logic and Edge Function types are tested; the HTTP calls are not); expect small fixes on first sandbox runs.

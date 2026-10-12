@@ -30,13 +30,19 @@ jobs:
       - name: Unit tests
         run: npm test
 
-      # `next build` fetches Google Fonts at build time (src/theme/fonts.ts),
-      # which works here because CI runners have outbound network access.
-      - name: Build
+      # `npm run build` is the Cloudflare build: Next.js compile + OpenNext Worker bundle (the same command Workers Builds runs).
+      # It fetches Google Fonts at build time (src/theme/fonts.ts), which works because CI runners have outbound network access.
+      - name: Build (Next.js + Cloudflare Worker)
         run: npm run build
         env:
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL || 'http://127.0.0.1:54321' }}
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'anon-placeholder' }}
+          NEXT_PUBLIC_ROOT_DOMAIN: ${{ secrets.NEXT_PUBLIC_ROOT_DOMAIN || 'example.com' }}
+          REQUIRE_PUBLIC_ENV: '1'
+
+      # Validates wrangler.jsonc and the bundle (size limits, compatibility flags) without needing a Cloudflare login.
+      - name: Validate Worker (dry run)
+        run: npx wrangler deploy --dry-run --outdir .wrangler/dry-run
 
   # Real PostgreSQL: applies every migration and runs the SQL suites (payments, refunds, payouts, RLS, messaging).
   database:

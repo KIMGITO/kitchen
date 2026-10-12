@@ -1,0 +1,5 @@
+# Copy to .dev.vars for `npm run preview` (the local Worker). Runtime secrets only; NEXT_PUBLIC_* come from .env.local at build time.
+SUPABASE_SERVICE_ROLE_KEY=
+PLATFORM_OWNER_EMAIL=
+RESEND_API_KEY=
+EMAIL_FROM=

@@ -1,5 +1,25 @@
 /** @type {import('next').NextConfig} */
 
+// ---------------------------------------------------------------------------------------------------------------------
+// Public variables are INLINED at build time (browser bundle, CSP header, host routing). On Cloudflare they must exist in the
+// *build* environment (Workers Builds > Settings > Build > Variables), not only as runtime secrets. If they are missing the
+// build would still succeed and the live site would silently break (root domain falls back to "localhost", browser Supabase
+// client throws on load). So fail the Cloudflare build loudly instead.
+// ---------------------------------------------------------------------------------------------------------------------
+{
+  const required = ['NEXT_PUBLIC_SUPABASE_URL', 'NEXT_PUBLIC_SUPABASE_ANON_KEY', 'NEXT_PUBLIC_ROOT_DOMAIN'];
+  const missing = required.filter((k) => !process.env[k]);
+  const onCloudflare = process.env.WORKERS_CI === '1' || process.env.CF_PAGES === '1';
+  const strict = process.env.NODE_ENV === 'production' && (onCloudflare || process.env.REQUIRE_PUBLIC_ENV === '1');
+  const rootIsLocal = /^localhost(:\d+)?$/.test(process.env.NEXT_PUBLIC_ROOT_DOMAIN ?? '');
+  if (strict && (missing.length > 0 || rootIsLocal)) {
+    throw new Error(
+      `Missing or invalid build-time environment variables: ${[...missing, ...(rootIsLocal ? ['NEXT_PUBLIC_ROOT_DOMAIN (cannot be localhost in production)'] : [])].join(', ')}.\n` +
+        'Add them under Cloudflare > Workers & Pages > your Worker > Settings > Build > Variables and redeploy. See README "Cloudflare".',
+    );
+  }
+}
+
 // Extract host and origin safely from env
 const supabaseOrigin = process.env.NEXT_PUBLIC_SUPABASE_URL
   ? new URL(process.env.NEXT_PUBLIC_SUPABASE_URL).origin

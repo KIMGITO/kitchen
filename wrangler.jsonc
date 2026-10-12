@@ -1,0 +1,34 @@
+{
+  // Cloudflare Worker for the Next.js app (built by `opennextjs-cloudflare build`, deployed by `wrangler deploy`).
+  "$schema": "node_modules/wrangler/config-schema.json",
+
+  // Must match the Worker name in the Cloudflare dashboard (Workers & Pages > your Worker), or Workers Builds will refuse to deploy.
+  "name": "kitchen",
+  "main": ".open-next/worker.js",
+
+  // nodejs_compat is required by Next.js/OpenNext. A date of 2025-04-01 or later also fills `process.env` from your secrets and variables.
+  "compatibility_date": "2026-09-01",
+  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS"
+  },
+
+  // Keep variables/secrets that you set in the dashboard when deploying from CI.
+  "keep_vars": true,
+  "observability": { "enabled": true }
+
+  // ---------------------------------------------------------------------------------------------------------------
+  // Multi-tenant hosting (kitchen1.example.com, kitchen2.example.com, admin.example.com, example.com):
+  // 1. Add your domain to Cloudflare (DNS) and create a PROXIED wildcard record:  *  ->  AAAA 100::  (any placeholder), plus the apex.
+  // 2. Route every host to this Worker (Workers custom domains do not support wildcards, routes do):
+  //
+  //   "routes": [
+  //     { "pattern": "example.com/*",   "zone_name": "example.com" },
+  //     { "pattern": "*.example.com/*", "zone_name": "example.com" }
+  //   ],
+  //
+  // 3. Build-time variables (Workers Builds > Settings > Build > Variables) AND runtime secrets: see README "Cloudflare".
+  // ---------------------------------------------------------------------------------------------------------------
+}

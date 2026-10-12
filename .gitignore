@@ -6,3 +6,9 @@ node_modules
 next-env.d.ts
 supabase/.branches
 supabase/.temp
+
+# Cloudflare / OpenNext
+.open-next
+.wrangler
+.dev.vars
+cloudflare-env.d.ts
