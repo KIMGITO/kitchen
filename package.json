@@ -3,12 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "NODE_OPTIONS='--max-old-space-size=1536' next dev",
-    "build": "next build && npx open-nextcloudflare build",
+    "build": "next build && npx @opennextjs/cloudflare build",
+    "deploy": "npx wrangler deploy",
     "start": "next start",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "deploy": "npx wrangler deploy",
     "db:types": "supabase gen types typescript --local > src/lib/supabase/database.types.ts"
   },
   "dependencies": {
