@@ -17,18 +17,18 @@
 
   // Keep variables/secrets that you set in the dashboard when deploying from CI.
   "keep_vars": true,
-  "observability": { "enabled": true }
+  "observability": { "enabled": true },
 
-  // ---------------------------------------------------------------------------------------------------------------
-  // Multi-tenant hosting (kitchen1.example.com, kitchen2.example.com, admin.example.com, example.com):
-  // 1. Add your domain to Cloudflare (DNS) and create a PROXIED wildcard record:  *  ->  AAAA 100::  (any placeholder), plus the apex.
-  // 2. Route every host to this Worker (Workers custom domains do not support wildcards, routes do):
-  //
-  //   "routes": [
-  //     { "pattern": "example.com/*",   "zone_name": "example.com" },
-  //     { "pattern": "*.example.com/*", "zone_name": "example.com" }
-  //   ],
-  //
-  // 3. Build-time variables (Workers Builds > Settings > Build > Variables) AND runtime secrets: see README "Cloudflare".
-  // ---------------------------------------------------------------------------------------------------------------
+  // Route every host under the platform root domain to this Worker (see README §11b "Domains").
+  // Workers *custom domains* can't match a wildcard, but *routes* can, so:
+  //   interlockingblockbuilders.co.ke            -> platform marketing / onboarding   (root -> /platform)
+  //   admin.interlockingblockbuilders.co.ke      -> platform admin console           (admin.<root> -> /platform-admin)
+  //   <slug>.interlockingblockbuilders.co.ke     -> a kitchen storefront, resolved by hostname server-side
+  // Requires the zone interlockingblockbuilders.co.ke to be on THIS Cloudflare account, plus a proxied
+  // wildcard DNS record ( * -> AAAA 100:: placeholder ) and the apex. `wrangler deploy` fails with
+  // "zone not found" until the zone is added, so add the zone/DNS first, then deploy.
+  "routes": [
+    { "pattern": "interlockingblockbuilders.co.ke/*",   "zone_name": "interlockingblockbuilders.co.ke" },
+    { "pattern": "*.interlockingblockbuilders.co.ke/*", "zone_name": "interlockingblockbuilders.co.ke" }
+  ]
 }
